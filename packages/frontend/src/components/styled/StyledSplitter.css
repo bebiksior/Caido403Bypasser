@@ -1,0 +1,4 @@
+.custom-gutter-vertical,
+.custom-gutter-horizontal {
+  background-color: var(--c-bg-default);
+}

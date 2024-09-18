@@ -1,0 +1,27 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "StarterKit plugin for Caido",
+  "author": "Caido Labs Inc. <dev@caido.io>",
+  "license": "CC0-1.0",
+  "type": "module",
+  "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "openai": "^4.57.1",
+    "parse-raw-http": "^0.0.1",
+    "read-yaml-file": "^2.1.0",
+    "real-cancellable-promise": "^1.2.0",
+    "shared": "workspace:*",
+    "yaml": "^2.5.1"
+  },
+  "devDependencies": {
+    "@caido/sdk-backend": "0.40.1-beta.7",
+    "@caido/sdk-frontend": "0.40.1-beta.3",
+    "@modyfi/vite-plugin-yaml": "^1.1.0"
+  }
+}

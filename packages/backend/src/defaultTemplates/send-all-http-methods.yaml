@@ -1,0 +1,13 @@
+id: send-all-http-methods
+description: Sends the request using all possible HTTP methods to bypass 403 Forbidden.
+enabled: true
+modificationScript: >-
+  const methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD",
+  "CONNECT", "TRACE"];
+
+  const modifiedRequests = methods.map(method => {
+    const modifiedRequest = helper.setMethod(input, () => method);
+    return modifiedRequest;
+  });
+
+  return modifiedRequests;

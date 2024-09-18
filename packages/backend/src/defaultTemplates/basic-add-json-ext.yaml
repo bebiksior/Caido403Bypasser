@@ -1,0 +1,6 @@
+id: basic-add-json-ext
+description: Appends .json to path
+enabled: true
+modificationScript: |-
+  const newRequest = helper.setPath(input, (prev) => prev + ".json") 
+  return newRequest;

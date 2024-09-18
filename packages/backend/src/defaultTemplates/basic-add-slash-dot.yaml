@@ -1,0 +1,13 @@
+id: basic-add-slash-dot
+description: Adds slash and a dot before the last segment of the path.
+enabled: true
+modificationScript: |-
+  const newRequest = helper.setPath(input, (prev) => {
+    const segments = prev.split('/');
+    if (segments.length > 1) {
+      segments.splice(segments.length - 1, 0, '.');
+    }
+    return segments.join('/');
+  });
+
+  return newRequest;
