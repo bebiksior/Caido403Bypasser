@@ -15,7 +15,6 @@ export const themeOptions: ThemeOptions = {
     },
   },
   components: {
-    // Add cursor: pointer to every row in the table
     MuiTableRow: {
       styleOverrides: {
         root: {

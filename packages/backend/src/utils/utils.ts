@@ -28,7 +28,6 @@ export function parseRequest(requestString: string): Record<string, any> {
   request["method"] = parsedRequestLine["method"];
   request["uri"] = parsedRequestLine["uri"];
 
-  // TODO: refactor this part to be tested
   const headerLines: string[] = [];
   while (lines.length > 0) {
     const line = lines.shift();
@@ -51,7 +50,6 @@ export function parseResponse(responseString: string): Record<string, any> {
   response["statusCode"] = parsedStatusLine["statusCode"];
   response["statusMessage"] = parsedStatusLine["statusMessage"];
 
-  // TODO: refactor this part to be tested
   const headerLines: string[] = [];
   while (lines.length > 0) {
     const line = lines.shift();

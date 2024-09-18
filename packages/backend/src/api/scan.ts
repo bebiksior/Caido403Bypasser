@@ -123,8 +123,6 @@ export const runScan = async (
 
     scanStore.updateScan(scan.ID, { State: "Timed Out" });
     sdk.api.send("scans:updated", scan.ID, { State: "Timed Out" });
-
-    // set every running template result to failed
   }, settings.scanTimeout);
 
   runScanWorker(sdk, scan)
