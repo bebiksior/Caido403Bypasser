@@ -209,7 +209,7 @@ const TopPanel = () => {
                 minRows={10}
                 value={aiPrompt}
                 onChange={(e) => setAIPrompt(e.target.value)}
-                style={{ width: "100%" }}
+                style={{ width: "100%", fontSize: "14px" }}
               />
               <Button variant="contained" onClick={onAIAskClick}>
                 Ask AI
