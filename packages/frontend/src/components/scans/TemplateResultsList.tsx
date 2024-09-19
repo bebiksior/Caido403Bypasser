@@ -111,12 +111,14 @@ const TemplateResultsList: React.FC = () => {
             >
               <TableCell>{result.ID}</TableCell>
               <TableCell>
-                {result.Response.StatusCode && (
+                {result.Response.StatusCode ? (
                   <Chip
-                    label={result.Response.StatusCode}
+                    label={result.Response.StatusCode || ""}
                     color={getColorForStatusCode(result.Response.StatusCode)}
                     size="small"
                   />
+                ) : (
+                  ""
                 )}
               </TableCell>
               <TableCell>{result.Response.ContentLength || ""}</TableCell>
