@@ -136,7 +136,15 @@ export const runScanWorker = async (
     }
   }
 
-  if (isCancelled(scan)) return;
+  if (isCancelled(scan)) {
+    const fieldsUpdate: Partial<Scan> = {
+      State: "Cancelled",
+      finishedAt: new Date(),
+    };
+    scanStore.updateScan(scan.ID, fieldsUpdate);
+    sdk.api.send("scans:updated", scan.ID, fieldsUpdate);
+    return;
+  }
 
   const fieldsUpdate: Partial<Scan> = {
     State: "Completed",

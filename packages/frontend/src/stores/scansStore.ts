@@ -26,10 +26,13 @@ export const useScansStore = create<ScansStore>((set, get) => ({
   setSelectedScanID: (selectedScanID: number) => set({ selectedScanID }),
   deselectScan: () => set({ selectedScanID: undefined }),
   clearScans: async () => {
-    const { clearScans } = useScansRepository()
+    const { clearScans } = useScansRepository();
     await clearScans();
 
-    set({ scans: [] });
+    get().setScans([]);
+
+    const { deselectScan } = get();
+    deselectScan();
   },
 
   initialize: async () => {
@@ -52,7 +55,9 @@ export const useScansStore = create<ScansStore>((set, get) => ({
 
     sdk.backend.onEvent("scans:updated", (scanID, scan) => {
       const scans = get().scans;
-      get().setScans(scans.map((s) => (s.ID === scanID ? { ...s, ...scan } : s)));
+      get().setScans(
+        scans.map((s) => (s.ID === scanID ? { ...s, ...scan } : s))
+      );
     });
 
     const { getScans } = useScansRepository(sdk);

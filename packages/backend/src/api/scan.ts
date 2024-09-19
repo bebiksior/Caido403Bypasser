@@ -59,7 +59,9 @@ export const addScan = async (
 
 export const deleteScan = (sdk: CaidoBackendSDK, id: number): Result<void> => {
   const scanStore = ScanStore.get();
+  cancelScan(sdk, id);
   scanStore.deleteScan(id);
+
   sdk.api.send("scans:deleted", id);
   return { kind: "Success", value: undefined };
 };
@@ -96,10 +98,17 @@ export const reRunScan = async (
 
 export const clearScans = (sdk: CaidoBackendSDK): Result<void> => {
   const scanStore = ScanStore.get();
+  const scans = scanStore.getScans();
+  scans.forEach((scan) => {
+    if (scan.State === "Running") {
+      cancelScan(sdk, scan.ID);
+    }
+  });
+
   scanStore.clearScans();
   sdk.api.send("scans:cleared");
   return { kind: "Success", value: undefined };
-}
+};
 
 export const runScan = async (
   sdk: CaidoBackendSDK,
@@ -140,6 +149,27 @@ export const runScan = async (
 
       clearTimeout(timeout);
     });
+
+  return { kind: "Success", value: scan };
+};
+
+export const cancelScan = (sdk: CaidoBackendSDK, id: number): Result<Scan> => {
+  const scanStore = ScanStore.get();
+  const scan = scanStore.getScan(id);
+
+  if (!scan) {
+    return { kind: "Error", error: "Scan not found" };
+  }
+
+  if (scan.State === "Running") {
+    const updatedScan = scanStore.updateScan(id, { State: "Cancelled" });
+    if (!updatedScan) {
+      return { kind: "Error", error: "Scan not found" };
+    }
+    
+    sdk.api.send("scans:updated", id, { State: "Cancelled" });
+    return { kind: "Success", value: updatedScan };
+  }
 
   return { kind: "Success", value: scan };
 };

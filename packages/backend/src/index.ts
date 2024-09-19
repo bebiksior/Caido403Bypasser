@@ -1,6 +1,7 @@
 import { SDK, DefineAPI } from "caido:plugin";
 import {
   addScan,
+  cancelScan,
   clearScans,
   deleteScan,
   getScan,
@@ -46,6 +47,7 @@ export type API = DefineAPI<{
   addScan: typeof addScan;
   deleteScan: typeof deleteScan;
   updateScan: typeof updateScan;
+  cancelScan: typeof cancelScan;
   runScan: typeof runScan;
   reRunScan: typeof reRunScan;
   clearScans: typeof clearScans;
@@ -88,6 +90,7 @@ export async function init(sdk: SDK<API>) {
   sdk.api.register("reRunScan", reRunScan);
   sdk.api.register("getTemplateResults", getTemplateResults);
   sdk.api.register("clearScans", clearScans);
+  sdk.api.register("cancelScan", cancelScan); 
 
   // Settings
   sdk.api.register("getSettings", getSettings);
