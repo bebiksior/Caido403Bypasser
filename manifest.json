@@ -1,7 +1,7 @@
 {
   "id": "bypasser",
   "name": "403Bypasser",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Bypass a 403 page with a set of templates",
   "author": {
     "name": "bebiks",
