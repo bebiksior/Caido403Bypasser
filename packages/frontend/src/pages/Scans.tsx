@@ -31,6 +31,8 @@ export default function Scans() {
               variant="contained"
               color="primary"
               onClick={() => clearScans()}
+              size="small"
+              sx={{ display: { sm: "none", md: "block" }}}
             >
               Clear All
             </Button>

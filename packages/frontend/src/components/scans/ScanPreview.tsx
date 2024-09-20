@@ -7,7 +7,7 @@ import { useScansStore } from "@/stores/scansStore";
 
 const ScanPreview = () => {
   const selectedScanID = useScansStore((state) => state.selectedScanID);
-  const scans = useScansStore((state) => state.scans);
+  const selectedScan = useScansStore((state) => state.getSelectedScan(state));
 
   if (selectedScanID === undefined) {
     return (
@@ -19,7 +19,6 @@ const ScanPreview = () => {
     );
   }
 
-  const selectedScan = scans.find((scan) => scan.ID === selectedScanID);
   if (!selectedScan) {
     return (
       <StyledBox>

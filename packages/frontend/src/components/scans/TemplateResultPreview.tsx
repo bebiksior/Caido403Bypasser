@@ -4,11 +4,8 @@ import StyledSplitter from "@/components/styled/StyledSplitter";
 import { useTemplateResultsStore } from "@/stores/templateResultsStore";
 
 const TemplateResultPreview = () => {
-  const selectedTemplateResultID = useTemplateResultsStore(state => state.selectedTemplateResultID);
-  const templateResults = useTemplateResultsStore(state => state.templateResults);
-
-  const selectedTemplateResult = templateResults.find(
-    (templateResult) => templateResult.ID === selectedTemplateResultID
+  const selectedTemplateResult = useTemplateResultsStore((state) =>
+    state.getSelectedTemplateResult(state)
   );
 
   if (!selectedTemplateResult) {

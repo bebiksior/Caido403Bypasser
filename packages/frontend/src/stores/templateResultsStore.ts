@@ -13,6 +13,9 @@ interface TemplateResultsStore {
 
   selectedTemplateResultID: number | undefined;
   setSelectedTemplateResultID: (selectedTemplateResultID: number) => void;
+  getSelectedTemplateResult: (
+    state: TemplateResultsStore
+  ) => TemplateResult | undefined;
   deselectTemplateResult: () => void;
 
   initialize: () => Promise<void>;
@@ -35,6 +38,10 @@ export const useTemplateResultsStore = create<TemplateResultsStore>(
     selectedTemplateResultID: undefined,
     setSelectedTemplateResultID: (selectedTemplateResultID: number) =>
       set({ selectedTemplateResultID }),
+    getSelectedTemplateResult: (state: TemplateResultsStore) =>
+      state.templateResults.find(
+        (templateResult) => templateResult.ID === state.selectedTemplateResultID
+      ),
     deselectTemplateResult: () => set({ selectedTemplateResultID: undefined }),
 
     initialize: async () => {

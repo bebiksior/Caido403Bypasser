@@ -9,6 +9,7 @@ interface ScansStore {
 
   selectedScanID: number | undefined;
   setSelectedScanID: (selectedScanID: number) => void;
+  getSelectedScan: (state: ScansStore) => Scan | undefined;
 
   deselectScan: () => void;
   clearScans: () => void;
@@ -24,6 +25,8 @@ export const useScansStore = create<ScansStore>((set, get) => ({
     })),
   selectedScanID: undefined,
   setSelectedScanID: (selectedScanID: number) => set({ selectedScanID }),
+  getSelectedScan: (state: ScansStore) =>
+    state.scans.find((scan) => scan.ID === state.selectedScanID),
   deselectScan: () => set({ selectedScanID: undefined }),
   clearScans: async () => {
     const { clearScans } = useScansRepository();

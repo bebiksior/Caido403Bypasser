@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { HTTPEditor } from "@/components/httpeditor/HTTPEditor";
 import StyledBox from "@/components/styled/StyledBox";
 import StyledSplitter from "@/components/styled/StyledSplitter";
@@ -7,7 +7,7 @@ import useTestStore from "@/stores/testsStore";
 
 const TestsPanel = () => {
   const { testContent, setTestContent, testResults } = useTestStore();
-  const [currentTestResultIndex, setCurrentTestResultIndex] = React.useState(0);
+  const [currentTestResultIndex, setCurrentTestResultIndex] = useState(0);
 
   useEffect(() => {
     setCurrentTestResultIndex(0);
