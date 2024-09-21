@@ -1,34 +1,21 @@
 import React from "react";
-import Splitter, { SplitDirection, SplitProps } from "@devbookhq/splitter";
+import { Allotment, AllotmentProps } from "allotment";
 import "./StyledSplitter.css";
 
-interface StyledSplitterProps extends SplitProps {
-  direction?: SplitDirection;
+interface StyledSplitterProps extends AllotmentProps {
+  vertical?: boolean;
   children: React.ReactNode;
 }
 
 const StyledSplitter: React.FC<StyledSplitterProps> = ({
-  direction = SplitDirection.Horizontal,
+  vertical = false,
   children,
   ...props
 }) => {
   return (
-    <Splitter
-      direction={direction}
-      gutterClassName={
-        direction === SplitDirection.Horizontal
-          ? "custom-gutter-horizontal"
-          : "custom-gutter-vertical"
-      }
-      draggerClassName={
-        direction === SplitDirection.Horizontal
-          ? "custom-dragger-horizontal"
-          : "custom-dragger-vertical"
-      }
-      {...props}
-    >
+    <Allotment vertical={vertical} separator={false} {...props}>
       {children}
-    </Splitter>
+    </Allotment>
   );
 };
 

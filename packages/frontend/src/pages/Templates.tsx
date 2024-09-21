@@ -9,7 +9,6 @@ import { Button } from "@mui/material";
 import { CloudUpload, Add } from "@mui/icons-material";
 import { useSDKStore } from "@/stores/sdkStore";
 import { useTemplatesStore } from "@/stores/templatesStore";
-import { SplitDirection } from "@devbookhq/splitter";
 
 export default function TemplatesPage() {
   const sdk = useSDKStore.getState().getSDK();
@@ -48,7 +47,7 @@ export default function TemplatesPage() {
   }, [sdk]);
 
   return (
-    <StyledSplitter direction={SplitDirection.Horizontal}>
+    <StyledSplitter>
       {/* Templates */}
       <StyledBox>
         <div className="flex justify-between items-center p-5">

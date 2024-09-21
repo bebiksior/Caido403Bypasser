@@ -1,4 +1,6 @@
-.custom-gutter-vertical,
-.custom-gutter-horizontal {
-  background-color: var(--c-bg-default);
+.sash,
+.sash::before,
+.sash-hover,
+.sash-active {
+  background-color: var(--c-bg-default) !important;
 }

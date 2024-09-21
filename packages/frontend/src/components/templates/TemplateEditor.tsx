@@ -2,7 +2,6 @@ import React from "react";
 import StyledBox from "@/components/styled/StyledBox";
 import StyledSplitter from "@/components/styled/StyledSplitter";
 import TestsPanel from "@/components/templates/panels/TestsPanel";
-import { SplitDirection } from "@devbookhq/splitter";
 import TopPanel from "@/components/templates/panels/TopPanel";
 import { useTemplatesStore } from "@/stores/templatesStore";
 
@@ -32,7 +31,7 @@ const TemplateEditor = () => {
   }
 
   return (
-    <StyledSplitter direction={SplitDirection.Vertical}>
+    <StyledSplitter vertical>
       <TopPanel />
       <TestsPanel />
     </StyledSplitter>

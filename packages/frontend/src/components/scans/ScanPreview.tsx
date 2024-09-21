@@ -1,6 +1,5 @@
 import TemplateResultPreview from "@/components/scans/TemplateResultPreview";
 import TemplateResultsList from "@/components/scans/TemplateResultsList";
-import { SplitDirection } from "@devbookhq/splitter";
 import StyledBox from "@/components/styled/StyledBox";
 import StyledSplitter from "@/components/styled/StyledSplitter";
 import { useScansStore } from "@/stores/scansStore";
@@ -30,7 +29,7 @@ const ScanPreview = () => {
   }
 
   return (
-    <StyledSplitter direction={SplitDirection.Vertical} key={selectedScanID}>
+    <StyledSplitter vertical key={selectedScanID}>
       <StyledBox>
         <TemplateResultsList />
       </StyledBox>

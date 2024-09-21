@@ -1,5 +1,4 @@
 import { Box, Button, InputBase, Typography } from "@mui/material";
-import { SplitDirection } from "@devbookhq/splitter";
 import { useState } from "react";
 import ScanPreview from "@/components/scans/ScanPreview";
 import { ScansList } from "@/components/scans/ScansList";
@@ -13,8 +12,7 @@ export default function Scans() {
 
   return (
     <StyledSplitter
-      direction={SplitDirection.Horizontal}
-      initialSizes={[45, 55]}
+      defaultSizes={[45, 55]}
     >
       <StyledBox>
         <Box
