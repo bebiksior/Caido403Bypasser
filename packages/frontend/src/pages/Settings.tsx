@@ -23,7 +23,7 @@ export default function Settings() {
       <div className="flex gap-4 flex-wrap">
         <div
           className="flex flex-col gap-4 p-5 rounded-lg"
-          style={{ backgroundColor: "var(--c-bg-default)", width: "400px" }}
+          style={{ background: "var(--c-bg-default)", width: "400px" }}
         >
           <div>
             <label htmlFor="openAIApiKey" className="block">
@@ -56,7 +56,7 @@ export default function Settings() {
         </div>
         <div
           className="flex flex-col gap-4 p-5 rounded-lg"
-          style={{ backgroundColor: "var(--c-bg-default)", width: "400px" }}
+          style={{ background: "var(--c-bg-default)", width: "400px" }}
         >
           <div>Template Settings</div>
           <div>

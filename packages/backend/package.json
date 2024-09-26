@@ -20,8 +20,8 @@
     "yaml": "^2.5.1"
   },
   "devDependencies": {
-    "@caido/sdk-backend": "0.40.1-beta.7",
-    "@caido/sdk-frontend": "0.40.1-beta.3",
+    "@caido/sdk-backend": "0.41.0",
+    "@caido/sdk-frontend": "0.41.0",
     "@modyfi/vite-plugin-yaml": "^1.1.0"
   }
 }

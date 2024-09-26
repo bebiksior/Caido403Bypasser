@@ -42,6 +42,7 @@ export const loadSettingsFromFile = async (sdk: SDK) => {
     const _settings = JSON.parse(await readFile(settingsPath, "utf-8"));
     Object.assign(settings, _settings);
   } catch (error) {
+    // If settings.json doesn't exist, create it. I assume that every error is due to the file not existing, TODO: improve this.
     await saveSettingsToFile(sdk, settings);
   }
 };

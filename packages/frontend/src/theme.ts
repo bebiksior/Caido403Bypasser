@@ -28,7 +28,7 @@ export const themeOptions: ThemeOptions = {
         {
           props: { variant: 'contained' },
           style: {
-            backgroundColor: 'var(--c-bg-primary)',
+            background: 'var(--c-bg-primary)',
             color: 'rgb(237, 234, 232)',
             fontSize: '.875rem',
           },
