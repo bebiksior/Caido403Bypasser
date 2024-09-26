@@ -37,15 +37,22 @@ export const getScan = (
   return { kind: "Error", error: "Scan not found" };
 };
 
+const getHighestId = (): number => {
+  const scanStore = ScanStore.get();
+  const scans = scanStore.getScans();
+
+  return scans.reduce((maxId, scan) => Math.max(maxId, scan.ID), 0);
+}
+
 export const addScan = async (
   sdk: CaidoBackendSDK,
   target: ScanTarget
 ): Promise<Result<Scan>> => {
   const scanStore = ScanStore.get();
-  const scans = scanStore.getScans();
+  const nextID = getHighestId() + 1;
 
   const scan: Scan = {
-    ID: scans.length,
+    ID: nextID,
     State: "Running",
     Target: target,
     startedAt: new Date(),
