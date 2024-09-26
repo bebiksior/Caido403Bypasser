@@ -4,7 +4,7 @@ import * as path from "path";
 
 export async function ensureDir(sdk: SDK): Promise<boolean> {
   try {
-    const dir = path.join(sdk.meta.path(), "templates");
+    const dir = getTemplateDir(sdk);
     await mkdir(dir, { recursive: true });
     return true;
   } catch (e) {
@@ -12,12 +12,19 @@ export async function ensureDir(sdk: SDK): Promise<boolean> {
   }
 }
 
+export function fixWindowsPath(inputPath: string): string {
+  if (/^[a-zA-Z]:[^\\/]/.test(inputPath)) {
+    return inputPath.replace(/^([a-zA-Z]:)(.*)$/, '$1\\$2');
+  }
+  return inputPath;
+}
+
 export function getTemplatePath(sdk: SDK, templateID: string): string {
-  return path.join(sdk.meta.path(), "templates", templateID + ".yaml");
+  return fixWindowsPath(path.join(sdk.meta.path(), "templates", templateID + ".yaml"));
 }
 
 export function getTemplateDir(sdk: SDK): string {
-  return path.join(sdk.meta.path(), "templates");
+  return fixWindowsPath(path.join(sdk.meta.path(), "templates"));
 }
 
 export function parseRequest(requestString: string): Record<string, any> {

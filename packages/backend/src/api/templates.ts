@@ -6,7 +6,7 @@ import readYamlFile from "read-yaml-file";
 import YAML from "yaml";
 import type { Result } from "shared";
 import { TemplateStore } from "../stores/templates";
-import { getTemplateDir, getTemplatePath, validateTemplate } from "../utils/utils";
+import { fixWindowsPath, getTemplateDir, getTemplatePath, validateTemplate } from "../utils/utils";
 import { CaidoBackendSDK } from "@/types";
 
 export async function getTemplates(sdk: SDK): Promise<Result<Template[]>> {
@@ -83,13 +83,14 @@ export async function removeTemplate(
 export async function loadTemplates(sdk: CaidoBackendSDK) {
   const templateStore = TemplateStore.get();
 
-  const files = await readdir(getTemplateDir(sdk));
+  const templateDir = getTemplateDir(sdk);
+  const files = await readdir(templateDir);
   if (!files) return;
 
   const loadTemplatePromises = files
     .filter((file) => path.extname(file).toLowerCase() === ".yaml")
     .map(async (file) => {
-      const templatePath = path.join(sdk.meta.path() + "templates", file);
+      const templatePath = fixWindowsPath(path.join(sdk.meta.path(), "templates", file));
       try {
         const data = (await readYamlFile(templatePath)) as Template;
         const { valid, message } = validateTemplate(data);
