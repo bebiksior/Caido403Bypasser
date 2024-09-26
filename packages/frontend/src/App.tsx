@@ -8,6 +8,7 @@ import { themeOptions } from "@/theme";
 import SettingsIcon from "@mui/icons-material/Settings";
 import RadarIcon from "@mui/icons-material/Radar";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import "allotment/dist/style.css";
 
 export default function App() {
   const [activeComponent, setActiveComponent] = useState("Scans");
