@@ -6,7 +6,8 @@ import { useTemplatesRepostiory } from "@/repositories/templates";
 import StyledBox from "@/components/styled/StyledBox";
 import StyledSplitter from "@/components/styled/StyledSplitter";
 import { Button } from "@mui/material";
-import { CloudUpload, Add } from "@mui/icons-material";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import AddIcon from "@mui/icons-material/Add";
 import { useSDKStore } from "@/stores/sdkStore";
 import { useTemplatesStore } from "@/stores/templatesStore";
 
@@ -56,7 +57,7 @@ export default function TemplatesPage() {
             <Button
               variant="outlined"
               onClick={onImportClick}
-              startIcon={<CloudUpload />}
+              startIcon={<CloudUploadIcon />}
             >
               Import
             </Button>
@@ -64,7 +65,7 @@ export default function TemplatesPage() {
               variant="contained"
               onClick={onNewClick}
               className="flex items-center justify-center"
-              startIcon={<Add />}
+              startIcon={<AddIcon />}
             >
               New
             </Button>

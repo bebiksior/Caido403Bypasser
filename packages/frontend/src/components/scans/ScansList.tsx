@@ -12,10 +12,8 @@ import {
   IconButton,
   TableSortLabel,
 } from "@mui/material";
-import {
-  Refresh as RefreshIcon,
-  Delete as DeleteIcon,
-} from "@mui/icons-material";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { Scan } from "shared";
 import { useSDKStore } from "@/stores/sdkStore";
 import { useScansStore } from "@/stores/scansStore";

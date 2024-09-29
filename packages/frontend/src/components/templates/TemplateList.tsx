@@ -14,10 +14,8 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import {
-  Download as DownloadIcon,
-  Delete as DeleteIcon,
-} from "@mui/icons-material";
+import DownloadIcon from "@mui/icons-material/Download";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useTemplatesStore } from "@/stores/templatesStore";
 
 const MAX_DESCRIPTION_LENGTH = 45;

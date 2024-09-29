@@ -12,7 +12,7 @@
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
-    "@mui/iconal": "^6.1.0",
+    "@mui/icons-material": "^6.1.0",
     "@mui/material": "^6.1.0",
     "ace-builds": "^1.36.2",
     "allotment": "^1.20.2",
