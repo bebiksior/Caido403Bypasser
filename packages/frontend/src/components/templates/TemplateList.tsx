@@ -17,18 +17,14 @@ import {
 import DownloadIcon from "@mui/icons-material/Download";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
-  removeTempTemplate,
   useTemplates,
   useTemplatesLocalStore,
 } from "@/stores/templatesStore";
-import { useQueryClient } from "@tanstack/react-query";
 
 const MAX_DESCRIPTION_LENGTH = 45;
 
 const TemplateList = () => {
   const sdk = useSDKStore.getState().getSDK();
-  const queryClient = useQueryClient();
-
   const { selectedTemplateID, setSelectedTemplateID, deselectTemplate } =
     useTemplatesLocalStore();
   const { templates } = useTemplates();

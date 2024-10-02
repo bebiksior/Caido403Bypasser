@@ -21,8 +21,6 @@ type SortField = "ID" | "StatusCode" | "ContentLength" | "TemplateID" | "State";
 type SortOrder = "asc" | "desc" | null;
 
 const TemplateResultsList = () => {
-  console.log("Rendering TemplateResultsList");
-
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder>(null);
 

@@ -9,8 +9,6 @@ const ScanPreview = () => {
   const selectedScanID = useScansLocalStore((state) => state.selectedScanID);
   if (selectedScanID === undefined) return EmptyPage("Select a scan");
 
-  console.log("Rendering ScanPreview");
-
   return (
     <StyledSplitter vertical key={selectedScanID}>
       <StyledBox>
