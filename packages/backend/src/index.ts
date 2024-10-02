@@ -27,6 +27,8 @@ import {
   removeTemplate,
   saveTemplate,
   writeTemplates,
+  resetTemplates,
+  clearTemplates,
 } from "./api/templates";
 import { ensureDir } from "./utils/utils";
 import defaultTemplates from "@/defaultTemplates/defaultTemplates";
@@ -43,6 +45,8 @@ export type API = DefineAPI<{
   removeTemplate: typeof removeTemplate;
   exportTemplate: typeof exportTemplate;
   importTemplate: typeof importTemplate;
+  resetTemplates: typeof resetTemplates;
+  clearTemplates: typeof clearTemplates;
 
   // Scans
   getScans: typeof getScans;
@@ -84,6 +88,8 @@ export async function init(sdk: SDK<API>) {
   sdk.api.register("removeTemplate", removeTemplate);
   sdk.api.register("exportTemplate", exportTemplate);
   sdk.api.register("importTemplate", importTemplate);
+  sdk.api.register("resetTemplates", resetTemplates);
+  sdk.api.register("clearTemplates", clearTemplates);
 
   // Scans
   sdk.api.register("getScans", getScans);

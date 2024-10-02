@@ -18,13 +18,13 @@ import {
 import { useTemplates, useTemplatesLocalStore } from "@/stores/templatesStore";
 import useTestStore from "@/stores/testsStore";
 import { useSettings } from "@/stores/settingsStore";
+
 const TopPanel = () => {
   const sdk = useSDKStore.getState().getSDK();
   const { selectedTemplateID } = useTemplatesLocalStore();
   const { templates } = useTemplates();
   const { data: settings, isLoading, isError, error } = useSettings();
-  const testContent = useTestStore((state) => state.testContent);
-  const setTestResults = useTestStore((state) => state.setTestResults);
+  const { testContent, setTestResults } = useTestStore();
   
   const [aiDialogVisible, setAIDialogVisible] = useState(false);
   const [aiPrompt, setAIPrompt] = useState("");
@@ -62,9 +62,7 @@ const TopPanel = () => {
     if (!selectedTemplate) return;
 
     if (!draftId || !draftDescription || !draftScript) {
-      sdk.window.showToast("Please fill all fields", {
-        variant: "error",
-      });
+      sdk.window.showToast("Please fill all fields", { variant: "error" });
       return;
     }
 
@@ -80,9 +78,7 @@ const TopPanel = () => {
       sdk
     );
 
-    sdk.window.showToast("Template saved", {
-      variant: "success",
-    });
+    sdk.window.showToast("Template saved", { variant: "success" });
   }, [draftId, draftDescription, draftScript, selectedTemplate, sdk]);
 
   const onAIAskClick = useCallback(async () => {
@@ -98,19 +94,13 @@ const TopPanel = () => {
         aiResponse += content;
 
         const idMatch = /---ID\s*?\n([\w-]+)/.exec(aiResponse);
-        if (idMatch) {
-          setDraftId(idMatch[1] || "");
-        }
+        if (idMatch) setDraftId(idMatch[1] || "");
 
         const descriptionMatch = /---DESCRIPTION\s*?\n(.+)/.exec(aiResponse);
-        if (descriptionMatch) {
-          setDraftDescription(descriptionMatch[1] || "");
-        }
+        if (descriptionMatch) setDraftDescription(descriptionMatch[1] || "");
 
         const scriptMatch = /---SCRIPT\s*?\n([\s\S]+)/.exec(aiResponse);
-        if (scriptMatch) {
-          setDraftScript(scriptMatch[1] || "");
-        }
+        if (scriptMatch) setDraftScript(scriptMatch[1] || "");
       }
     );
   }, [aiPrompt, settings]);
@@ -123,8 +113,7 @@ const TopPanel = () => {
   const hasUnsavedChanges =
     draftId !== selectedTemplate?.id ||
     draftDescription !== selectedTemplate?.description ||
-    draftScript !== selectedTemplate?.modificationScript ||
-    selectedTemplate?.isNew;
+    draftScript !== selectedTemplate?.modificationScript;
 
   if (!selectedTemplate) {
     return (
@@ -175,7 +164,7 @@ const TopPanel = () => {
             disabled={!hasUnsavedChanges}
             onClick={onSaveClick}
           >
-            {selectedTemplate.isNew ? "Create" : "Save"}
+            Save
           </Button>
           <Button variant="outlined" onClick={onTestClick}>
             Test
@@ -185,9 +174,7 @@ const TopPanel = () => {
             variant="outlined"
             color="info"
             autoCapitalize="none"
-            onClick={() => {
-              setAIDialogVisible(true);
-            }}
+            onClick={() => setAIDialogVisible(true)}
           >
             AI Generate
           </Button>

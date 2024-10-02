@@ -4,5 +4,4 @@ export type Template = {
   description?: string;
   enabled: boolean;
   modificationScript: string;
-  isNew?: boolean;
 };

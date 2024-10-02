@@ -1,33 +1,50 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { baseTemplate } from "@/constants";
 import TemplateEditor from "@/components/templates/TemplateEditor";
 import TemplateList from "@/components/templates/TemplateList";
 import { StyledBox } from "caido-material-ui";
 import { StyledSplitter } from "caido-material-ui";
-import { Button } from "@mui/material";
+import { Button, Menu, MenuItem } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import AddIcon from "@mui/icons-material/Add";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import RestoreIcon from "@mui/icons-material/Restore";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useSDKStore } from "@/stores/sdkStore";
-import { addTempTemplate, importTemplate, useTemplatesLocalStore } from "@/stores/templatesStore";
-import { useQueryClient } from "@tanstack/react-query";
+import { importTemplate, useTemplatesLocalStore, useAddTemplate, useResetTemplates, useClearTemplates } from "@/stores/templatesStore";
 
 export default function TemplatesPage() {
   const sdk = useSDKStore.getState().getSDK();
-  const queryClient = useQueryClient();
   
   const { setSelectedTemplateID } = useTemplatesLocalStore();
+  const { addTemplate } = useAddTemplate();
+  
+  const { resetTemplates } = useResetTemplates();
+  const { clearTemplates } = useClearTemplates();
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const onNewClick = useCallback(() => {
     const newTemplate = {
       ...baseTemplate,
       id: `new-template-${Date.now()}`,
     };
-
-    addTempTemplate(newTemplate, queryClient);
+    
+    addTemplate(newTemplate);
     setSelectedTemplateID(newTemplate.id);
   }, []);
 
   const onImportClick = useCallback(() => {
+    handleClose();
     const input = document.createElement("input");
     input.type = "file";
     input.accept = ".yaml";
@@ -43,6 +60,18 @@ export default function TemplatesPage() {
     input.click();
   }, [sdk]);
 
+  const onResetClick = useCallback(() => {
+    handleClose();
+    resetTemplates();
+    sdk.window.showToast("Templates reset", { variant: "success" });
+  }, [resetTemplates, sdk]);
+
+  const onClearClick = useCallback(() => {
+    handleClose();
+    clearTemplates();
+    sdk.window.showToast("Templates cleared", { variant: "success" });
+  }, [clearTemplates, sdk]);
+
   return (
     <StyledSplitter>
       {/* Templates */}
@@ -52,11 +81,26 @@ export default function TemplatesPage() {
           <div className="flex gap-3">
             <Button
               variant="outlined"
-              onClick={onImportClick}
-              startIcon={<CloudUploadIcon />}
+              onClick={handleClick}
+              startIcon={<MoreVertIcon />}
             >
-              Import
+              Actions
             </Button>
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={onImportClick}>
+                <CloudUploadIcon className="mr-2" /> Import
+              </MenuItem>
+              <MenuItem onClick={onResetClick}>
+                <RestoreIcon className="mr-2" /> Reset
+              </MenuItem>
+              <MenuItem onClick={onClearClick}>
+                <DeleteIcon className="mr-2" /> Clear
+              </MenuItem>
+            </Menu>
             <Button
               variant="contained"
               onClick={onNewClick}

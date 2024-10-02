@@ -21,11 +21,13 @@ import {
   useTemplates,
   useTemplatesLocalStore,
 } from "@/stores/templatesStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 const MAX_DESCRIPTION_LENGTH = 45;
 
 const TemplateList = () => {
   const sdk = useSDKStore.getState().getSDK();
+  const queryClient = useQueryClient();
 
   const { selectedTemplateID, setSelectedTemplateID, deselectTemplate } =
     useTemplatesLocalStore();
@@ -45,11 +47,7 @@ const TemplateList = () => {
     async (e: React.MouseEvent, template: Template) => {
       e.stopPropagation();
 
-      if (template.isNew) {
-        await removeTempTemplate(template.id);
-      } else {
-        await handleBackendCall(sdk.backend.removeTemplate(template.id), sdk);
-      }
+      await handleBackendCall(sdk.backend.removeTemplate(template.id), sdk);
 
       if (selectedTemplateID === template.id) {
         deselectTemplate();

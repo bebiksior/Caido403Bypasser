@@ -17,7 +17,6 @@ You can return an array of modified requests to send multiple requests.`;
 export const baseTemplate = {
   id: "new-template",
   description: "New template!",
-  isNew: true,
   enabled: true,
   modificationScript: `/*\n${engineInfo}\n*/
 

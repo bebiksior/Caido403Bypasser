@@ -8,6 +8,7 @@ import type { Result } from "shared";
 import { TemplateStore } from "../stores/templates";
 import { fixWindowsPath, getTemplateDir, getTemplatePath, validateTemplate } from "../utils/utils";
 import { CaidoBackendSDK } from "@/types";
+import defaultTemplates from "@/defaultTemplates/defaultTemplates";
 
 export async function getTemplates(sdk: SDK): Promise<Result<Template[]>> {
   const templateStore = TemplateStore.get();
@@ -23,6 +24,19 @@ export async function getTemplates(sdk: SDK): Promise<Result<Template[]>> {
   }
 }
 
+export async function resetTemplates(sdk: SDK): Promise<Result<void>> {
+  const templateStore = TemplateStore.get();
+  templateStore.clearTemplates();
+  templateStore.addTemplates(defaultTemplates);
+  await writeTemplates(sdk, defaultTemplates);
+  return { kind: "Success", value: undefined };
+}
+
+export async function clearTemplates(sdk: SDK): Promise<Result<void>> {
+  const templateStore = TemplateStore.get();
+  templateStore.clearTemplates();
+  return { kind: "Success", value: undefined };
+}
 export async function getTemplate(sdk: SDK, templateID: string): Promise<Result<Template>> {
   const templateStore = TemplateStore.get();
   const template = templateStore.getTemplate(templateID);
@@ -217,7 +231,6 @@ export async function saveTemplate(
       return { kind: "Error", error: `Invalid template: ${message}` };
     }
     
-    newTemplate.isNew = false;
     const template = templateStore.getTemplate(currentTemplateID);
 
     if (template) {

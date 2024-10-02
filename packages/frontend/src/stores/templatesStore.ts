@@ -1,4 +1,9 @@
-import { QueryClient, useQuery } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useSDKStore } from "@/stores/sdkStore";
 import { create } from "zustand";
 import { handleBackendCall } from "@/utils/utils";
@@ -40,6 +45,40 @@ export const useTemplate = (templateID: string) => {
   });
 
   return { template: data, isLoading, isError, error };
+};
+
+// Calls sdk.backend.addTemplate(template)
+export const useAddTemplate = () => {
+  const queryClient = useQueryClient();
+  const sdk = useSDKStore.getState().getSDK();
+  const { mutate, isError, error } = useMutation({
+    mutationFn: (template: Template) =>
+      handleBackendCall(sdk.backend.saveTemplate(template.id, template), sdk),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["templates"] }),
+  });
+  return { addTemplate: mutate, isError, error };
+};
+
+// Calls sdk.backend.resetTemplates()
+export const useResetTemplates = () => {
+  const queryClient = useQueryClient();
+  const sdk = useSDKStore.getState().getSDK();
+  const { mutate, isError, error } = useMutation({
+    mutationFn: () => handleBackendCall(sdk.backend.resetTemplates(), sdk),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["templates"] }),
+  });
+  return { resetTemplates: mutate, isError, error };
+};
+
+// Calls sdk.backend.clearTemplates()
+export const useClearTemplates = () => {
+  const queryClient = useQueryClient();
+  const sdk = useSDKStore.getState().getSDK();
+  const { mutate, isError, error } = useMutation({
+    mutationFn: () => handleBackendCall(sdk.backend.clearTemplates(), sdk),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["templates"] }),
+  });
+  return { clearTemplates: mutate, isError, error };
 };
 
 // Calls sdk.backend.removeTemplate(templateID)
