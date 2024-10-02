@@ -21,6 +21,21 @@ export function getTemplateResults(
   return { kind: "Success", value: scan.Results || [] };
 }
 
+export const getTemplateResult = (
+  sdk: SDK,
+  scanID: number,
+  templateResultID: number
+): Result<TemplateResult> => {
+  const scanStore = ScanStore.get();
+  const scan = scanStore.getScan(scanID);
+  
+  if (!scan) return { kind: "Error", error: "Scan not found" };
+  const templateResult = scan.Results.find((result) => result.ID === templateResultID);
+  
+  if (!templateResult) return { kind: "Error", error: "Template result not found" };
+  return { kind: "Success", value: templateResult };
+};
+
 export const getScans = (sdk: SDK): Result<Scan[]> => {
   const scanStore = ScanStore.get();
   return { kind: "Success", value: scanStore.getScans() };

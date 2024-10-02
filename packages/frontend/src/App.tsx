@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Scans from "@/pages/Scans";
-import Settings from "@/pages/Settings";
+import SettingsPage from "@/pages/Settings";
 import TemplatesPage from "@/pages/Templates";
 import "@/styles/style.css";
 import { Tab, Tabs, ThemeProvider, createTheme } from "@mui/material";
@@ -20,7 +20,7 @@ export default function App() {
       case "Templates":
         return <TemplatesPage />;
       case "Settings":
-        return <Settings />;
+        return <SettingsPage />;
     }
   };
 

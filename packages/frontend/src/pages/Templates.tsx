@@ -2,24 +2,20 @@ import { useCallback } from "react";
 import { baseTemplate } from "@/constants";
 import TemplateEditor from "@/components/templates/TemplateEditor";
 import TemplateList from "@/components/templates/TemplateList";
-import { useTemplatesRepostiory } from "@/repositories/templates";
-import StyledBox from "@/components/styled/StyledBox";
-import StyledSplitter from "@/components/styled/StyledSplitter";
+import { StyledBox } from "caido-material-ui";
+import { StyledSplitter } from "caido-material-ui";
 import { Button } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import AddIcon from "@mui/icons-material/Add";
 import { useSDKStore } from "@/stores/sdkStore";
-import { useTemplatesStore } from "@/stores/templatesStore";
+import { addTempTemplate, importTemplate, useTemplatesLocalStore } from "@/stores/templatesStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function TemplatesPage() {
   const sdk = useSDKStore.getState().getSDK();
-
-  const setTemplates = useTemplatesStore((state) => state.setTemplates);
-  const setSelectedTemplateID = useTemplatesStore(
-    (state) => state.setSelectedTemplateID
-  );
-
-  const { importTemplate } = useTemplatesRepostiory(sdk);
+  const queryClient = useQueryClient();
+  
+  const { setSelectedTemplateID } = useTemplatesLocalStore();
 
   const onNewClick = useCallback(() => {
     const newTemplate = {
@@ -27,7 +23,7 @@ export default function TemplatesPage() {
       id: `new-template-${Date.now()}`,
     };
 
-    setTemplates((prevTemplates) => [...prevTemplates, newTemplate]);
+    addTempTemplate(newTemplate, queryClient);
     setSelectedTemplateID(newTemplate.id);
   }, []);
 

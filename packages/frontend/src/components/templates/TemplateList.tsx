@@ -16,15 +16,20 @@ import {
 } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useTemplatesStore } from "@/stores/templatesStore";
+import {
+  removeTempTemplate,
+  useTemplates,
+  useTemplatesLocalStore,
+} from "@/stores/templatesStore";
 
 const MAX_DESCRIPTION_LENGTH = 45;
 
 const TemplateList = () => {
   const sdk = useSDKStore.getState().getSDK();
-  
-  const { templates, setTemplates, selectedTemplateID, setSelectedTemplateID, deselectTemplate } = useTemplatesStore();
 
+  const { selectedTemplateID, setSelectedTemplateID, deselectTemplate } =
+    useTemplatesLocalStore();
+  const { templates } = useTemplates();
   const onTemplateToggle = useCallback(
     async (template: Template) => {
       const updatedTemplate = { ...template, enabled: !template.enabled };
@@ -32,31 +37,29 @@ const TemplateList = () => {
         sdk.backend.saveTemplate(updatedTemplate.id, updatedTemplate),
         sdk
       );
-      setTemplates((prevTemplates) =>
-        prevTemplates.map((t) =>
-          t.id === updatedTemplate.id ? updatedTemplate : t
-        )
-      );
     },
-    [sdk, setTemplates]
+    [sdk]
   );
 
   const onRemoveClick = useCallback(
     async (e: React.MouseEvent, template: Template) => {
       e.stopPropagation();
-      if (!template.isNew)
+
+      if (template.isNew) {
+        await removeTempTemplate(template.id);
+      } else {
         await handleBackendCall(sdk.backend.removeTemplate(template.id), sdk);
-      setTemplates((prevTemplates) =>
-        prevTemplates.filter((t) => t.id !== template.id)
-      );
+      }
+
       if (selectedTemplateID === template.id) {
         deselectTemplate();
       }
-      sdk.window.showToast("Deleted template " + template.id, {
+
+      sdk.window.showToast(`Deleted template ${template.id}`, {
         variant: "success",
       });
     },
-    [sdk, selectedTemplateID, setTemplates, setSelectedTemplateID]
+    [sdk, selectedTemplateID, deselectTemplate]
   );
 
   const exportTemplate = useCallback(
@@ -92,7 +95,7 @@ const TemplateList = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {templates.length === 0 ? (
+          {templates?.length === 0 ? (
             <TableRow>
               <TableCell colSpan={4} align="center">
                 <Typography variant="body2">
@@ -101,7 +104,7 @@ const TemplateList = () => {
               </TableCell>
             </TableRow>
           ) : (
-            templates.map((template) => (
+            templates?.map((template) => (
               <TableRow
                 key={template.id}
                 selected={template.id === selectedTemplateID}
@@ -117,9 +120,12 @@ const TemplateList = () => {
                 </TableCell>
                 <TableCell>{template.id}</TableCell>
                 <TableCell>
-                  {template.description && template.description.length > MAX_DESCRIPTION_LENGTH
-                    ? template.description.substring(0, MAX_DESCRIPTION_LENGTH) +
-                      "..."
+                  {template.description &&
+                  template.description.length > MAX_DESCRIPTION_LENGTH
+                    ? template.description.substring(
+                        0,
+                        MAX_DESCRIPTION_LENGTH
+                      ) + "..."
                     : template.description}
                 </TableCell>
                 <TableCell>

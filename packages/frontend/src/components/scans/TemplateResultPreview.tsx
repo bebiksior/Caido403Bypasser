@@ -1,35 +1,37 @@
+import React from "react";
+import { EmptyPage } from "@/components/emptypage/EmptyPage";
 import { HTTPEditor } from "@/components/httpeditor/HTTPEditor";
-import StyledBox from "@/components/styled/StyledBox";
-import StyledSplitter from "@/components/styled/StyledSplitter";
-import { useTemplateResultsStore } from "@/stores/templateResultsStore";
+import { useScansLocalStore } from "@/stores/scansStore";
+import {
+  useTemplateResult,
+  useTemplateResultsLocalStore,
+} from "@/stores/templateResultsStore";
+import { StyledBox, StyledSplitter } from "caido-material-ui";
 
 const TemplateResultPreview = () => {
-  const selectedTemplateResult = useTemplateResultsStore((state) =>
-    state.getSelectedTemplateResult(state)
+  const selectedScanID = useScansLocalStore((state) => state.selectedScanID);
+  const selectedTemplateResultID = useTemplateResultsLocalStore(
+    (state) => state.selectedTemplateResultID
   );
 
-  if (!selectedTemplateResult) {
-    return (
-      <StyledBox>
-        <div className="flex justify-center items-center h-full text-center text-zinc-500">
-          <p>Select a template result</p>
-        </div>
-      </StyledBox>
-    );
-  }
+  const { templateResult } = useTemplateResult(
+    selectedScanID,
+    selectedTemplateResultID
+  );
+
+  if (!selectedScanID) return EmptyPage("No scan selected");
+  if (!selectedTemplateResultID)
+    return EmptyPage("No template result selected");
 
   return (
     <StyledSplitter>
       <StyledBox>
-        <HTTPEditor
-          type="request"
-          value={selectedTemplateResult?.SentRawRequest}
-        />
+        <HTTPEditor type="request" value={templateResult?.SentRawRequest || ""} />
       </StyledBox>
       <StyledBox>
         <HTTPEditor
           type="response"
-          value={selectedTemplateResult?.Response.RawResponse}
+          value={templateResult?.Response.RawResponse || ""}
         />
       </StyledBox>
     </StyledSplitter>

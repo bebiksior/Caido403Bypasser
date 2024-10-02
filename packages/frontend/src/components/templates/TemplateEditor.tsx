@@ -1,18 +1,22 @@
 import React from "react";
-import StyledBox from "@/components/styled/StyledBox";
-import StyledSplitter from "@/components/styled/StyledSplitter";
+import { StyledBox } from "caido-material-ui";
+import { StyledSplitter } from "caido-material-ui";
 import TestsPanel from "@/components/templates/panels/TestsPanel";
 import TopPanel from "@/components/templates/panels/TopPanel";
-import { useTemplatesStore } from "@/stores/templatesStore";
+import { useTemplates, useTemplatesLocalStore } from "@/stores/templatesStore";
 
 const TemplateEditor = () => {
-  const templates = useTemplatesStore((state) => state.templates);
-  const selectedTemplateID = useTemplatesStore((state) => state.selectedTemplateID);
-  const setSelectedTemplateID = useTemplatesStore((state) => state.setSelectedTemplateID);
+  const selectedTemplateID = useTemplatesLocalStore(
+    (state) => state.selectedTemplateID
+  );
+  const setSelectedTemplateID = useTemplatesLocalStore(
+    (state) => state.setSelectedTemplateID
+  );
+  const { templates } = useTemplates();
 
-  const selectedTemplate = templates.find((t) => t.id === selectedTemplateID);
+  const selectedTemplate = templates?.find((t) => t.id === selectedTemplateID);
   if (!selectedTemplate) {
-    const previousTemplate = templates.find(
+    const previousTemplate = templates?.find(
       (t) => t.previousID === selectedTemplateID
     );
 

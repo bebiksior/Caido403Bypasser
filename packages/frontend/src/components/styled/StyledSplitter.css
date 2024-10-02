@@ -1,6 +1,0 @@
-.sash,
-.sash::before,
-.sash-hover,
-.sash-active {
-  background-color: var(--c-bg-default) !important;
-}

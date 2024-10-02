@@ -4,17 +4,19 @@ import App from "./App";
 import { runScan } from "@/scan/scan";
 import { CaidoSDK } from "@/types/types";
 import { initializeSDK } from "@/stores/sdkStore";
-import { useScansStore } from "@/stores/scansStore";
-import { useTemplatesStore } from "@/stores/templatesStore";
-import useSettingsStore from "@/stores/settingsStore";
-import { useTemplateResultsStore } from "@/stores/templateResultsStore";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { initializeEvents as initializeScansEvents } from "@/stores/scansStore";
+import { initializeEvents as initializeTemplateResultsEvents } from "@/stores/templateResultsStore";
+import { initializeEvents as initializeTemplatesEvents } from "@/stores/templatesStore";
+
+const queryClient = new QueryClient();
 
 export const init = (sdk: CaidoSDK) => {
   initializeSDK(sdk);
-  useScansStore.getState().initialize();
-  useTemplatesStore.getState().initialize();
-  useSettingsStore.getState().initialize();
-  useTemplateResultsStore.getState().initialize();
+  
+  initializeScansEvents(sdk, queryClient);
+  initializeTemplateResultsEvents(sdk, queryClient);
+  initializeTemplatesEvents(sdk, queryClient);
 
   const rootElement = document.createElement("div");
   Object.assign(rootElement.style, {
@@ -23,7 +25,11 @@ export const init = (sdk: CaidoSDK) => {
   });
 
   const root = createRoot(rootElement);
-  root.render(<App />);
+  root.render(
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
+  );
 
   // Add the root element to the SDK navigation page
   sdk.navigation.addPage("/403bypasser", {

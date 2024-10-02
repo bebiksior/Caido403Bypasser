@@ -23,6 +23,19 @@ export async function getTemplates(sdk: SDK): Promise<Result<Template[]>> {
   }
 }
 
+export async function getTemplate(sdk: SDK, templateID: string): Promise<Result<Template>> {
+  const templateStore = TemplateStore.get();
+  const template = templateStore.getTemplate(templateID);
+  if (!template) {
+    return {
+      kind: "Error",
+      error: `Template not found: ${templateID}`,
+    };
+  }
+
+  return { kind: "Success", value: template };
+}
+
 export async function getRawTemplate(
   sdk: SDK,
   templateFileName: string

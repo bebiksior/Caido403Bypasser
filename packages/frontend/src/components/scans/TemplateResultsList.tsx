@@ -10,32 +10,37 @@ import {
   Chip,
   TableSortLabel,
 } from "@mui/material";
-import { useScansStore } from "@/stores/scansStore";
-import { useTemplateResultsStore } from "@/stores/templateResultsStore";
+import { useScansLocalStore } from "@/stores/scansStore";
+import {
+  useTemplateResults,
+  useTemplateResultsLocalStore,
+} from "@/stores/templateResultsStore";
+import { EmptyPage } from "@/components/emptypage/EmptyPage";
 
-interface TemplateResult {
-  ID: string;
-  Response: {
-    StatusCode: number;
-    ContentLength: number;
-  };
-  TemplateID: string;
-  State: string;
-}
+type SortField = "ID" | "StatusCode" | "ContentLength" | "TemplateID" | "State";
+type SortOrder = "asc" | "desc" | null;
 
-type OrderBy =
-  | keyof TemplateResult
-  | "Response.StatusCode"
-  | "Response.ContentLength";
+const TemplateResultsList = () => {
+  console.log("Rendering TemplateResultsList");
 
-const TemplateResultsList: React.FC = () => {
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortOrder, setSortOrder] = useState<SortOrder>(null);
+
   const {
-    templateResults,
     selectedTemplateResultID,
     setSelectedTemplateResultID,
     deselectTemplateResult,
-  } = useTemplateResultsStore();
-  const selectedScanID = useScansStore((state) => state.selectedScanID);
+  } = useTemplateResultsLocalStore();
+
+  const selectedScanID = useScansLocalStore((state) => state.selectedScanID);
+
+  const { templateResults, isLoading, isError, error } = useTemplateResults(
+    selectedScanID || 0
+  );
+
+  useEffect(() => {
+    deselectTemplateResult();
+  }, [selectedScanID, deselectTemplateResult]);
 
   const getColorForStatusCode = (statusCode: number) => {
     if (statusCode >= 200 && statusCode < 300) return "success";
@@ -43,66 +48,125 @@ const TemplateResultsList: React.FC = () => {
     return "error";
   };
 
-  useEffect(() => {
-    deselectTemplateResult();
-  }, [selectedScanID, setSelectedTemplateResultID]);
-
-  const [orderBy, setOrderBy] = useState<OrderBy>("ID");
-  const [order, setOrder] = useState<"asc" | "desc">("asc");
-
-  const handleRequestSort = (property: OrderBy) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
+  const handleSort = (field: SortField) => {
+    if (field === sortField) {
+      if (sortOrder === "asc") {
+        setSortOrder("desc");
+      } else if (sortOrder === "desc") {
+        setSortField(null);
+        setSortOrder(null);
+      } else {
+        setSortOrder("asc");
+      }
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
   };
 
-  const sortedResults = useMemo(() => {
+  const sortedTemplateResults = useMemo(() => {
+    if (!templateResults || !sortField || !sortOrder) return templateResults;
     return [...templateResults].sort((a, b) => {
-      let aValue: any, bValue: any;
-
-      if (orderBy === "Response.StatusCode") {
-        aValue = a.Response.StatusCode;
-        bValue = b.Response.StatusCode;
-      } else if (orderBy === "Response.ContentLength") {
-        aValue = a.Response.ContentLength;
-        bValue = b.Response.ContentLength;
-      } else {
-        aValue = a[orderBy];
-        bValue = b[orderBy];
+      let comparison = 0;
+      switch (sortField) {
+        case "ID":
+          comparison = a.ID - b.ID;
+          break;
+        case "StatusCode":
+          comparison =
+            (a.Response.StatusCode || 0) - (b.Response.StatusCode || 0);
+          break;
+        case "ContentLength":
+          comparison =
+            (a.Response.ContentLength || 0) - (b.Response.ContentLength || 0);
+          break;
+        case "TemplateID":
+          comparison = a.TemplateID.localeCompare(b.TemplateID);
+          break;
+        case "State":
+          comparison = a.State.localeCompare(b.State);
+          break;
       }
-
-      if (aValue < bValue) return order === "asc" ? -1 : 1;
-      if (aValue > bValue) return order === "asc" ? 1 : -1;
-      return 0;
+      return sortOrder === "asc" ? comparison : -comparison;
     });
-  }, [templateResults, orderBy, order]);
+  }, [templateResults, sortField, sortOrder]);
+
+  if (!selectedScanID) return EmptyPage("No scan selected");
+  if (isLoading) return EmptyPage("Loading template results...");
+  if (isError) return EmptyPage(`Error loading template results: ${error}`);
+  if (!templateResults || templateResults.length === 0)
+    return EmptyPage("No template results found");
 
   return (
     <TableContainer component={Paper} sx={{ height: "100%", overflow: "auto" }}>
       <Table stickyHeader>
         <TableHead>
           <TableRow>
-            {[
-              { id: "ID", label: "ID" },
-              { id: "Response.StatusCode", label: "Status Code" },
-              { id: "Response.ContentLength", label: "Content Length" },
-              { id: "TemplateID", label: "Template ID" },
-              { id: "State", label: "State" },
-            ].map((column) => (
-              <TableCell key={column.id}>
-                <TableSortLabel
-                  active={orderBy === column.id}
-                  direction={orderBy === column.id ? order : "asc"}
-                  onClick={() => handleRequestSort(column.id as OrderBy)}
-                >
-                  {column.label}
-                </TableSortLabel>
-              </TableCell>
-            ))}
+            <TableCell>
+              <TableSortLabel
+                active={sortField === "ID"}
+                direction={
+                  sortField === "ID" ? sortOrder || undefined : undefined
+                }
+                onClick={() => handleSort("ID")}
+              >
+                ID
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortField === "StatusCode"}
+                direction={
+                  sortField === "StatusCode"
+                    ? sortOrder || undefined
+                    : undefined
+                }
+                onClick={() => handleSort("StatusCode")}
+              >
+                Status Code
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortField === "ContentLength"}
+                direction={
+                  sortField === "ContentLength"
+                    ? sortOrder || undefined
+                    : undefined
+                }
+                onClick={() => handleSort("ContentLength")}
+              >
+                Content Length
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortField === "TemplateID"}
+                direction={
+                  sortField === "TemplateID"
+                    ? sortOrder || undefined
+                    : undefined
+                }
+                onClick={() => handleSort("TemplateID")}
+              >
+                Template ID
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortField === "State"}
+                direction={
+                  sortField === "State" ? sortOrder || undefined : undefined
+                }
+                onClick={() => handleSort("State")}
+              >
+                State
+              </TableSortLabel>
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {sortedResults.map((result) => (
+          {sortedTemplateResults?.map((result) => (
             <TableRow
               key={result.ID}
               selected={result.ID === selectedTemplateResultID}

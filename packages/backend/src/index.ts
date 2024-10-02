@@ -6,6 +6,7 @@ import {
   deleteScan,
   getScan,
   getScans,
+  getTemplateResult,
   getTemplateResults,
   reRunScan,
   runScan,
@@ -20,6 +21,7 @@ import {
   exportTemplate,
   getRawTemplate,
   getTemplates,
+  getTemplate,
   importTemplate,
   loadTemplates,
   removeTemplate,
@@ -35,6 +37,7 @@ export type { BackendEvents } from "./types";
 export type API = DefineAPI<{
   // Templates
   getTemplates: typeof getTemplates;
+  getTemplate: typeof getTemplate;
   getRawTemplate: typeof getRawTemplate;
   saveTemplate: typeof saveTemplate;
   removeTemplate: typeof removeTemplate;
@@ -52,6 +55,7 @@ export type API = DefineAPI<{
   reRunScan: typeof reRunScan;
   clearScans: typeof clearScans;
   getTemplateResults: typeof getTemplateResults;
+  getTemplateResult: typeof getTemplateResult;
 
   // Settings
   getSettings: typeof getSettings;
@@ -74,6 +78,7 @@ export async function init(sdk: SDK<API>) {
 
   // Templates
   sdk.api.register("getTemplates", getTemplates);
+  sdk.api.register("getTemplate", getTemplate);
   sdk.api.register("getRawTemplate", getRawTemplate);
   sdk.api.register("saveTemplate", saveTemplate);
   sdk.api.register("removeTemplate", removeTemplate);
@@ -89,6 +94,7 @@ export async function init(sdk: SDK<API>) {
   sdk.api.register("runScan", runScan);
   sdk.api.register("reRunScan", reRunScan);
   sdk.api.register("getTemplateResults", getTemplateResults);
+  sdk.api.register("getTemplateResult", getTemplateResult);
   sdk.api.register("clearScans", clearScans);
   sdk.api.register("cancelScan", cancelScan); 
 

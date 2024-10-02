@@ -2,7 +2,6 @@ import add8KBBody from "@/defaultTemplates/add-8kb-body.yaml";
 import addDotSemicolonPath from "@/defaultTemplates/add-dot-semicolon-path.yaml";
 import basicAddJSONExt from "@/defaultTemplates/basic-add-json-ext.yaml";
 import basicAddSlashDot from "@/defaultTemplates/basic-add-slash-dot.yaml";
-import basicDotSlashBefore from "@/defaultTemplates/basic-dot-slash-before.yaml";
 import basicDoubleSlashBefore from "@/defaultTemplates/basic-double-slash-before.yaml";
 import basicUppercase from "@/defaultTemplates/basic-uppercase.yaml";
 import lastCharDoubleURLEncode from "@/defaultTemplates/last-char-double-url-encode.yaml";
@@ -30,7 +29,6 @@ const defaultTemplates = [
   addDotSemicolonPath,
   basicAddJSONExt,
   basicAddSlashDot,
-  basicDotSlashBefore,
   basicDoubleSlashBefore,
   basicUppercase,
   lastCharDoubleURLEncode,

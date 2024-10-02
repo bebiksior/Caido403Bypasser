@@ -1,32 +1,15 @@
 import TemplateResultPreview from "@/components/scans/TemplateResultPreview";
 import TemplateResultsList from "@/components/scans/TemplateResultsList";
-import StyledBox from "@/components/styled/StyledBox";
-import StyledSplitter from "@/components/styled/StyledSplitter";
-import { useScansStore } from "@/stores/scansStore";
+import { StyledBox } from "caido-material-ui";
+import { useScansLocalStore } from "@/stores/scansStore";
+import { StyledSplitter } from "caido-material-ui";
+import { EmptyPage } from "@/components/emptypage/EmptyPage";
 
 const ScanPreview = () => {
-  const selectedScanID = useScansStore((state) => state.selectedScanID);
-  const selectedScan = useScansStore((state) => state.getSelectedScan(state));
+  const selectedScanID = useScansLocalStore((state) => state.selectedScanID);
+  if (selectedScanID === undefined) return EmptyPage("Select a scan");
 
-  if (selectedScanID === undefined) {
-    return (
-      <StyledBox>
-        <div className="flex justify-center items-center h-full text-center text-zinc-500">
-          <p>Select a scan</p>
-        </div>
-      </StyledBox>
-    );
-  }
-
-  if (!selectedScan) {
-    return (
-      <StyledBox>
-        <div className="flex justify-center items-center h-full text-center text-zinc-500">
-          <p>Scan not found</p>
-        </div>
-      </StyledBox>
-    );
-  }
+  console.log("Rendering ScanPreview");
 
   return (
     <StyledSplitter vertical key={selectedScanID}>

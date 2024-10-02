@@ -1,24 +1,42 @@
-import StyledBox from "@/components/styled/StyledBox";
+import { StyledBox } from "caido-material-ui";
 import { useSDKStore } from "@/stores/sdkStore";
-import useSettingsStore from "@/stores/settingsStore";
+import { useSettings, useUpdateSettings } from "@/stores/settingsStore";
 import { Button, Input } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Settings } from "shared";
 
-export default function Settings() {
+export default function SettingsPage() {
   const sdk = useSDKStore.getState().getSDK();
-  const { settings, updateSettings } = useSettingsStore();
-  const [draftSettings, setDraftSettings] = useState(settings);
+  const { data, isLoading, isError, error } = useSettings();
+  const { updateSettings } = useUpdateSettings();
+  const [draftSettings, setDraftSettings] = useState<Settings | undefined>(undefined);
+
+  useEffect(() => {
+    if (data) {
+      setDraftSettings(data);
+    }
+  }, [data]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error: {error?.message}</div>;
+  if (!data || !draftSettings) return <div>No data</div>;
+
 
   const handleSave = () => {
-    updateSettings(draftSettings);
+    if (!draftSettings) return;
+    updateSettings({ newSettings: draftSettings });
     sdk.window.showToast("Settings saved", { variant: "success" });
+  };
+
+  const updateDraftSettings = (key: keyof Settings, value: any) => {
+    setDraftSettings((prev) => ({ ...prev, [key]: value }) as Settings);
   };
 
   return (
     <StyledBox className="p-5">
       <h1 className="text-lg font-semibold m-0">Settings</h1>
       <p className="text-base text-gray-400 mt-0 select-text">
-        Settings and templates are stored in <b>{settings.baseDir}</b>
+        Settings and templates are stored in <b>{data?.baseDir}</b>
       </p>
       <div className="flex gap-4 flex-wrap">
         <div
@@ -31,17 +49,20 @@ export default function Settings() {
             </label>
             <p className="text-sm text-gray-400 mt-0">
               Your OpenAI API key to use the GPT-4o-mini API. This is required
-              for AI Generate feature. You can generate it {" "}<a href="https://platform.openai.com/settings/profile?tab=api-keys" target="_blank" rel="noreferrer">here</a>.
+              for AI Generate feature. You can generate it{" "}
+              <a
+                href="https://platform.openai.com/settings/profile?tab=api-keys"
+                target="_blank"
+                rel="noreferrer"
+              >
+                here
+              </a>
+              .
             </p>
             <Input
               id="openAIApiKey"
-              value={draftSettings.openAIKey}
-              onChange={(e) =>
-                setDraftSettings((prev) => ({
-                  ...prev,
-                  openAIKey: e.target.value,
-                }))
-              }
+              value={draftSettings?.openAIKey}
+              onChange={(e) => updateDraftSettings("openAIKey", e.target.value)}
               type="password"
               className="w-full"
             />
@@ -49,7 +70,7 @@ export default function Settings() {
           <Button
             variant="contained"
             onClick={handleSave}
-            disabled={draftSettings.openAIKey === settings.openAIKey}
+            disabled={draftSettings?.openAIKey === data?.openAIKey}
           >
             Save
           </Button>
@@ -70,12 +91,9 @@ export default function Settings() {
 
             <Input
               id="templatesDelay"
-              value={draftSettings.templatesDelay.toString()}
+              value={draftSettings?.templatesDelay?.toString()}
               onChange={(e) =>
-                setDraftSettings((prev) => ({
-                  ...prev,
-                  templatesDelay: Number(e.target.value),
-                }))
+                updateDraftSettings("templatesDelay", e.target.value)
               }
               className="w-full"
             />
@@ -89,12 +107,9 @@ export default function Settings() {
             </p>
             <Input
               id="scanTimeout"
-              value={draftSettings.scanTimeout.toString()}
+              value={draftSettings?.scanTimeout?.toString()}
               onChange={(e) =>
-                setDraftSettings((prev) => ({
-                  ...prev,
-                  scanTimeout: Number(e.target.value),
-                }))
+                updateDraftSettings("scanTimeout", e.target.value)
               }
               className="w-full"
             />
@@ -103,8 +118,8 @@ export default function Settings() {
             variant="contained"
             onClick={handleSave}
             disabled={
-              draftSettings.templatesDelay === settings.templatesDelay &&
-              draftSettings.scanTimeout === settings.scanTimeout
+              draftSettings?.templatesDelay === data?.templatesDelay &&
+              draftSettings?.scanTimeout === data?.scanTimeout
             }
           >
             Save

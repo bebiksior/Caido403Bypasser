@@ -2,18 +2,16 @@ import { Box, Button, InputBase, Typography } from "@mui/material";
 import { useState } from "react";
 import ScanPreview from "@/components/scans/ScanPreview";
 import { ScansList } from "@/components/scans/ScansList";
-import StyledBox from "@/components/styled/StyledBox";
-import StyledSplitter from "@/components/styled/StyledSplitter";
-import { useScansStore } from "@/stores/scansStore";
+import { StyledBox } from "caido-material-ui";
+import { StyledSplitter } from "caido-material-ui";
+import { useClearScans } from "@/stores/scansStore";
 
 export default function Scans() {
   const [searchText, setSearchText] = useState("");
-  const { clearScans } = useScansStore();
+  const { clearScans } = useClearScans();
 
   return (
-    <StyledSplitter
-      defaultSizes={[45, 55]}
-    >
+    <StyledSplitter defaultSizes={[45, 55]}>
       <StyledBox>
         <Box
           display="flex"
@@ -30,7 +28,7 @@ export default function Scans() {
               color="primary"
               onClick={() => clearScans()}
               size="small"
-              sx={{ display: { sm: "none", md: "block" }}}
+              sx={{ display: { sm: "none", md: "block" } }}
             >
               Clear All
             </Button>

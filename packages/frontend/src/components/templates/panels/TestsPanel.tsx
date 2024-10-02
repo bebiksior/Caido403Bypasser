@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { HTTPEditor } from "@/components/httpeditor/HTTPEditor";
-import StyledBox from "@/components/styled/StyledBox";
-import StyledSplitter from "@/components/styled/StyledSplitter";
+import { StyledBox } from "caido-material-ui";
+import { StyledSplitter } from "caido-material-ui";
 import { Button } from "@mui/material";
 import useTestStore from "@/stores/testsStore";
 

@@ -59,10 +59,12 @@ export class ScanStore {
   ): void {
     const scan = this.scans.get(scanID);
     if (scan) {
-      const templateResult = scan.Results[templateResultID];
+      const templateResult = scan.Results[templateResultID - 1];
       if (templateResult) {
         Object.assign(templateResult, fields);
       }
+    } else {
+      throw new Error("Scan not found");
     }
   }
 

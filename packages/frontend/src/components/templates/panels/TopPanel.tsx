@@ -6,7 +6,7 @@ import { runScript, Template } from "shared";
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/theme-chaos";
-import StyledBox from "@/components/styled/StyledBox";
+import { StyledBox } from "caido-material-ui";
 import {
   Button,
   Dialog,
@@ -15,37 +15,34 @@ import {
   Input,
   TextareaAutosize,
 } from "@mui/material";
-import { useTemplatesStore } from "@/stores/templatesStore";
+import { useTemplates, useTemplatesLocalStore } from "@/stores/templatesStore";
 import useTestStore from "@/stores/testsStore";
-import useSettingsStore from "@/stores/settingsStore";
-
+import { useSettings } from "@/stores/settingsStore";
 const TopPanel = () => {
   const sdk = useSDKStore.getState().getSDK();
-
-  const { templates, setTemplates, selectedTemplateID } = useTemplatesStore();
-  const [aiDialogVisible, setAIDialogVisible] = useState(false);
-  const [aiPrompt, setAIPrompt] = useState("");
-  const { settings } = useSettingsStore();
+  const { selectedTemplateID } = useTemplatesLocalStore();
+  const { templates } = useTemplates();
+  const { data: settings, isLoading, isError, error } = useSettings();
   const testContent = useTestStore((state) => state.testContent);
   const setTestResults = useTestStore((state) => state.setTestResults);
+  
+  const [aiDialogVisible, setAIDialogVisible] = useState(false);
+  const [aiPrompt, setAIPrompt] = useState("");
+  const [draftId, setDraftId] = useState("");
+  const [draftDescription, setDraftDescription] = useState("");
+  const [draftScript, setDraftScript] = useState("");
 
   const selectedTemplate = useMemo(
-    () => templates.find((t) => t.id === selectedTemplateID),
+    () => templates?.find((t) => t.id === selectedTemplateID),
     [templates, selectedTemplateID]
   );
 
-  const [draftId, setDraftId] = useState(selectedTemplate?.id || "");
-  const [draftDescription, setDraftDescription] = useState(
-    selectedTemplate?.description || ""
-  );
-  const [draftScript, setDraftScript] = useState(
-    selectedTemplate?.modificationScript || ""
-  );
-
   useEffect(() => {
-    setDraftId(selectedTemplate?.id || "");
-    setDraftDescription(selectedTemplate?.description || "");
-    setDraftScript(selectedTemplate?.modificationScript || "");
+    if (selectedTemplate) {
+      setDraftId(selectedTemplate.id);
+      setDraftDescription(selectedTemplate.description || "");
+      setDraftScript(selectedTemplate.modificationScript || "");
+    }
   }, [selectedTemplate]);
 
   const onTestClick = useCallback(() => {
@@ -59,7 +56,7 @@ const TopPanel = () => {
       });
       console.error(results.error);
     }
-  }, [testContent, draftScript, setTestResults]);
+  }, [testContent, draftScript, setTestResults, sdk]);
 
   const onSaveClick = useCallback(async () => {
     if (!selectedTemplate) return;
@@ -86,23 +83,15 @@ const TopPanel = () => {
     sdk.window.showToast("Template saved", {
       variant: "success",
     });
-  }, [
-    draftId,
-    draftDescription,
-    draftScript,
-    selectedTemplate,
-    setTemplates,
-    sdk,
-  ]);
+  }, [draftId, draftDescription, draftScript, selectedTemplate, sdk]);
 
   const onAIAskClick = useCallback(async () => {
     setAIDialogVisible(false);
-
     setDraftScript("");
 
     let aiResponse = "";
     fetchOpenAIStream(
-      settings.openAIKey,
+      settings?.openAIKey || "",
       aiPrompt,
       aiSystemPrompt,
       (content: string) => {
@@ -124,7 +113,11 @@ const TopPanel = () => {
         }
       }
     );
-  }, [aiPrompt]);
+  }, [aiPrompt, settings]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error: {error?.message}</div>;
+  if (!settings) return <div>No settings</div>;
 
   const isAIKeyValid = settings.openAIKey && settings.openAIKey !== "";
   const hasUnsavedChanges =

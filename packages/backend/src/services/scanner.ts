@@ -6,8 +6,7 @@ import { SDK } from "caido:plugin";
 import { ScanStore } from "@/stores/scans";
 import { CaidoBackendSDK } from "@/types";
 
-const BaseTemplateResult: TemplateResult = {
-  ID: 0,
+const BaseTemplateResult: Omit<TemplateResult, "ID"> = {
   TemplateID: "",
   SentRawRequest: "",
   Response: {
@@ -21,6 +20,14 @@ const BaseTemplateResult: TemplateResult = {
 const isCancelled = (scan: Scan) =>
   scan.State === "Cancelled" || scan.State === "Timed Out";
 
+function getNextTemplateResultID(scanStore: ScanStore, scanID: number): number {
+  const scan = scanStore.getScan(scanID);
+  if (!scan) return 1;
+  
+  const highestID = scan.Results.reduce((max, result) => Math.max(max, result.ID), 0);
+  return highestID + 1;
+}
+
 export const runScanWorker = async (
   sdk: CaidoBackendSDK,
   scan: Scan
@@ -33,7 +40,6 @@ export const runScanWorker = async (
 
   const scanStore = ScanStore.get();
 
-  let index = 0;
   for (const template of templates) {
     if (isCancelled(scan)) break;
     if (!template.enabled) continue;
@@ -46,14 +52,13 @@ export const runScanWorker = async (
 
       const templateResult: TemplateResult = {
         ...BaseTemplateResult,
-        ID: index,
+        ID: getNextTemplateResultID(scanStore, scan.ID),
         TemplateID: template.id,
         SentRawRequest:
           "Template script failed to execute. Error:\n" + result.error,
         State: "Failed",
       };
 
-      index++;
       scanStore.addTemplateResult(scan.ID, templateResult);
       sdk.api.send("templateResults:created", scan.ID, templateResult);
 
@@ -63,17 +68,16 @@ export const runScanWorker = async (
     for (const modifiedRequest of result.requests) {
       if (isCancelled(scan)) break;
 
+      const templateResultID = getNextTemplateResultID(scanStore, scan.ID);
       const templateResult: TemplateResult = {
         ...BaseTemplateResult,
-        ID: index,
+        ID: templateResultID,
         TemplateID: template.id,
         State: "Running",
         SentRawRequest: modifiedRequest,
       };
 
       try {
-        index++;
-
         scanStore.addTemplateResult(scan.ID, templateResult);
         sdk.api.send("templateResults:created", scan.ID, templateResult);
 
@@ -94,14 +98,14 @@ export const runScanWorker = async (
 
         scanStore.updateTemplateResult(
           scan.ID,
-          templateResult.ID,
+          templateResultID,
           updateFields
         );
 
         sdk.api.send(
           "templateResults:updated",
           scan.ID,
-          templateResult.ID,
+          templateResultID,
           updateFields
         );
 
@@ -123,13 +127,13 @@ export const runScanWorker = async (
 
         scanStore.updateTemplateResult(
           scan.ID,
-          templateResult.ID,
+          templateResultID,
           updateFields
         );
         sdk.api.send(
           "templateResults:updated",
           scan.ID,
-          templateResult.ID,
+          templateResultID,
           updateFields
         );
       }
