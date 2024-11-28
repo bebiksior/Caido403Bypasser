@@ -8,6 +8,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { initializeEvents as initializeScansEvents } from "@/stores/scansStore";
 import { initializeEvents as initializeTemplateResultsEvents } from "@/stores/templateResultsStore";
 import { initializeEvents as initializeTemplatesEvents } from "@/stores/templatesStore";
+import { RequestSpecRaw } from 'caido:utils';
+import { SDK } from "caido:plugin";
 
 const queryClient = new QueryClient();
 
@@ -53,4 +55,4 @@ export const init = (sdk: CaidoSDK) => {
     type: "RequestRow",
     commandId: "403bypasser-scan",
   });
-};
+}

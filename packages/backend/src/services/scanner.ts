@@ -23,8 +23,11 @@ const isCancelled = (scan: Scan) =>
 function getNextTemplateResultID(scanStore: ScanStore, scanID: number): number {
   const scan = scanStore.getScan(scanID);
   if (!scan) return 1;
-  
-  const highestID = scan.Results.reduce((max, result) => Math.max(max, result.ID), 0);
+
+  const highestID = scan.Results.reduce(
+    (max, result) => Math.max(max, result.ID),
+    0
+  );
   return highestID + 1;
 }
 
@@ -82,7 +85,11 @@ export const runScanWorker = async (
         sdk.api.send("templateResults:created", scan.ID, templateResult);
 
         const spec = new RequestSpecRaw(scan.Target.URL);
-        spec.setRaw(modifiedRequest);
+        spec.setRaw(
+          Uint8Array.from(
+            modifiedRequest.split("").map((letter) => letter.charCodeAt(0))
+          )
+        );
 
         const { response } = await sdk.requests.send(spec);
         const body = response.getRaw().toText() || "";
@@ -96,11 +103,7 @@ export const runScanWorker = async (
           },
         };
 
-        scanStore.updateTemplateResult(
-          scan.ID,
-          templateResultID,
-          updateFields
-        );
+        scanStore.updateTemplateResult(scan.ID, templateResultID, updateFields);
 
         sdk.api.send(
           "templateResults:updated",
@@ -125,11 +128,7 @@ export const runScanWorker = async (
           },
         };
 
-        scanStore.updateTemplateResult(
-          scan.ID,
-          templateResultID,
-          updateFields
-        );
+        scanStore.updateTemplateResult(scan.ID, templateResultID, updateFields);
         sdk.api.send(
           "templateResults:updated",
           scan.ID,
