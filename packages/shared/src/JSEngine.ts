@@ -33,13 +33,13 @@ export const runScript = (
       lineNumber: number,
       updateFn: (line: string | undefined) => string,
     ) => {
-      const lines = input.split("\n");
+      const lines = input.split("\r\n");
       lines[lineNumber] = updateFn(lines[lineNumber]);
-      return lines.join("\n");
+      return lines.join("\r\n");
     },
 
     setPath: (input: string, updateFn: (path: string) => string) => {
-      const lines = input.split("\n");
+      const lines = input.split("\r\n");
       const firstLine = lines[0];
       if (!firstLine) {
         throw new Error("No lines in input");
@@ -61,11 +61,11 @@ export const runScript = (
         ? `${method} ${updatedPath}?${query} ${version}`
         : `${method} ${updatedPath} ${version}`;
 
-      return lines.join("\n");
+      return lines.join("\r\n");
     },
 
     addQueryParameter: (input: string, param: string) => {
-      const lines = input.split("\n");
+      const lines = input.split("\r\n");
       const firstLine = lines[0];
       if (!firstLine) {
         throw new Error("No lines in input");
@@ -83,11 +83,11 @@ export const runScript = (
         ? `${method} ${path}?${updatedQuery} ${version}`
         : `${method} ${path} ${version}`;
 
-      return lines.join("\n");
+      return lines.join("\r\n");
     },
 
     setQuery: (input: string, updateFn: (query: string) => string) => {
-      const lines = input.split("\n");
+      const lines = input.split("\r\n");
       const firstLine = lines[0];
       if (!firstLine) {
         throw new Error("No lines in input");
@@ -105,11 +105,11 @@ export const runScript = (
         ? `${method} ${path}?${updatedQuery} ${version}`
         : `${method} ${path} ${version}`;
 
-      return lines.join("\n");
+      return lines.join("\r\n");
     },
 
     setMethod: (input: string, updateFn: (method: string) => string) => {
-      const lines = input.split("\n");
+      const lines = input.split("\r\n");
       const firstLine = lines[0];
       if (!firstLine) {
         throw new Error("No lines in input");
@@ -118,29 +118,29 @@ export const runScript = (
       const [method, path, version] = firstLine.split(" ");
       if (method && path && version) {
         lines[0] = `${updateFn(method)} ${path} ${version}`;
-        return lines.join("\n");
+        return lines.join("\r\n");
       }
       return input;
     },
 
     addHeader: (input: string, header: string) => {
-      const lines = input.split("\n");
+      const lines = input.split("\r\n");
       const headersIndex = lines.findIndex((line) => line.trim() === "");
       if (headersIndex === -1) {
         lines.push(header);
       } else {
         lines.splice(headersIndex, 0, header);
       }
-      return lines.join("\n");
+      return lines.join("\r\n");
     },
 
     removeHeader: (input: string, header: string) => {
-      const lines = input.split("\n");
-      return lines.filter((line) => !line.startsWith(header)).join("\n");
+      const lines = input.split("\r\n");
+      return lines.filter((line) => !line.startsWith(header)).join("\r\n");
     },
 
     setBody: (input: string, body: string) => {
-      const lines = input.split("\n");
+      const lines = input.split("\r\n");
       const bodyIndex = lines.findIndex((line) => line.trim() === "");
       if (bodyIndex === -1) {
         lines.push("");
@@ -148,11 +148,11 @@ export const runScript = (
       } else {
         lines.splice(bodyIndex + 1, lines.length - bodyIndex - 1, body);
       }
-      return lines.join("\n");
+      return lines.join("\r\n");
     },
 
     getMethod: (input: string) => {
-      const firstLine = input.split("\n")[0];
+      const firstLine = input.split("\r\n")[0];
       if (!firstLine) {
         throw new Error("No lines in input");
       }
@@ -160,7 +160,7 @@ export const runScript = (
     },
 
     getPath: (input: string) => {
-      const firstLine = input.split("\n")[0];
+      const firstLine = input.split("\r\n")[0];
       if (!firstLine || !firstLine.includes(" ")) {
         throw new Error("Invalid first line");
       }
@@ -168,7 +168,7 @@ export const runScript = (
     },
 
     getQuery: (input: string) => {
-      const firstLine = input.split("\n")[0];
+      const firstLine = input.split("\r\n")[0];
       if (!firstLine || !firstLine.includes(" ")) {
         throw new Error("Invalid first line");
       }
@@ -176,7 +176,7 @@ export const runScript = (
     },
 
     hasHeader: (input: string, header: string) => {
-      const lines = input.split("\n");
+      const lines = input.split("\r\n");
 
       for (let i = 1; i < lines.length; i++) {
         const line = lines[i]?.trim();
