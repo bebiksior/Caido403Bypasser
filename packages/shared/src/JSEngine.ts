@@ -2,7 +2,7 @@ export interface Helper {
   setLine: (
     input: string,
     lineNumber: number,
-    updateFn: (line: string | undefined) => string
+    updateFn: (line: string | undefined) => string,
   ) => string;
   setPath: (input: string, updateFn: (path: string) => string) => string;
   setQuery: (input: string, updateFn: (query: string) => string) => string;
@@ -25,13 +25,13 @@ type TemplateOutput = {
 
 export const runScript = (
   initialInput: string,
-  script: string
+  script: string,
 ): TemplateOutput => {
   const helper: Helper = {
     setLine: (
       input: string,
       lineNumber: number,
-      updateFn: (line: string | undefined) => string
+      updateFn: (line: string | undefined) => string,
     ) => {
       const lines = input.split("\n");
       lines[lineNumber] = updateFn(lines[lineNumber]);
@@ -177,12 +177,13 @@ export const runScript = (
 
     hasHeader: (input: string, header: string) => {
       const lines = input.split("\n");
-      const headersIndex = lines.findIndex((line) => line.trim() === "");
-      if (headersIndex === -1) {
-        return false;
+
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i]?.trim();
+        if (line === "") break;
+        if (line?.startsWith(header + ":")) return true;
       }
-      const headerLines = lines.slice(headersIndex + 1);
-      return headerLines.some((line) => line.startsWith(header + ":"));
+      return false;
     },
   };
 
