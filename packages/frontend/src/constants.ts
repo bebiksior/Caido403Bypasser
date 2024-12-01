@@ -9,6 +9,7 @@ helper.setMethod(input, (prev) => prev.toUpperCase())
 helper.addHeader(input, "Content-Type: application/json")
 helper.removeHeader(input, Content-Type")
 helper.setBody(input, "hello")
+This functions return a modified version of input string.
 
 helper.getMethod(input), helper.getPath(input), helper.getQuery(input), helper.hasHeader(input, "Content-Type")
 
@@ -29,10 +30,14 @@ export const defaultTest =
 export const aiSystemPrompt = `You are AI 403Bypasser template generator. Your job is to generate a template that bypasses 403 Forbidden status code.
 ${engineInfo}
 Helper functions return modified request. You can use them to modify the request. Example:
-const modifiedRequest = helper.setPath(input, (prev) => prev + ".json") 
+
+const modifiedRequest = helper.setPath(input, (prev) => prev + ".json")
+modifiedRequest = helper.addHeader(modifiedRequest, "Content-Type: application/json")
+
 Rules:
 - ID must match ^[a-zA-Z0-9-]+$
 - Keep description short and concise. Only describe what the template does.
+- Note that helper functions only return a modified version of the input string. You must update value of modifiedRequest by yourself. Example: '... modifiedRequest = helper.setPath(...); return modifiedRequest;' instead of '... helper.setPath(...); return modifiedRequest;'.
 - Reply in this format, nothing else:
 ---ID
 template-id
