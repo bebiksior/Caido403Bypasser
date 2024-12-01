@@ -1,6 +1,6 @@
 export type Scan = {
   ID: number;
-  State: "Running" | "Completed" | "Failed" | "Timed Out" | "Cancelled"
+  State: "Running" | "Completed" | "Failed" | "Timed Out" | "Cancelled";
   Target: ScanTarget;
   startedAt?: Date;
   finishedAt?: Date;
@@ -27,4 +27,5 @@ export type Response = {
   StatusCode: number;
   RawResponse: string;
   ContentLength: number;
+  Time: number;
 };

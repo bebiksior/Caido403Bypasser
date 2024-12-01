@@ -60,7 +60,7 @@ export const ScansList = ({ searchText }: ScansListProps) => {
   const filteredScans = useMemo(() => {
     if (!scans) return [];
     return scans.filter((scan) =>
-      scan.Target.URL.toLowerCase().includes(searchText.toLowerCase())
+      scan.Target.URL.toLowerCase().includes(searchText.toLowerCase()),
     );
   }, [scans, searchText]);
 
@@ -97,7 +97,7 @@ export const ScansList = ({ searchText }: ScansListProps) => {
 
   return (
     <TableContainer component={Paper} className="h-full">
-      <Table id="scanlist" stickyHeader>
+      <Table stickyHeader>
         <TableHead>
           <TableRow>
             <TableCell>

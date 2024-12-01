@@ -17,7 +17,13 @@ import {
 } from "@/stores/templateResultsStore";
 import { EmptyPage } from "@/components/emptypage/EmptyPage";
 
-type SortField = "ID" | "StatusCode" | "ContentLength" | "TemplateID" | "State";
+type SortField =
+  | "ID"
+  | "StatusCode"
+  | "ContentLength"
+  | "TemplateID"
+  | "State"
+  | "Time";
 type SortOrder = "asc" | "desc" | null;
 
 const TemplateResultsList = () => {
@@ -33,7 +39,7 @@ const TemplateResultsList = () => {
   const selectedScanID = useScansLocalStore((state) => state.selectedScanID);
 
   const { templateResults, isLoading, isError, error } = useTemplateResults(
-    selectedScanID || 0
+    selectedScanID || 0,
   );
 
   useEffect(() => {
@@ -77,6 +83,9 @@ const TemplateResultsList = () => {
         case "ContentLength":
           comparison =
             (a.Response.ContentLength || 0) - (b.Response.ContentLength || 0);
+          break;
+        case "Time":
+          comparison = (a.Response.Time || 0) - (b.Response.Time || 0);
           break;
         case "TemplateID":
           comparison = a.TemplateID.localeCompare(b.TemplateID);
@@ -152,6 +161,17 @@ const TemplateResultsList = () => {
             </TableCell>
             <TableCell>
               <TableSortLabel
+                active={sortField === "Time"}
+                direction={
+                  sortField === "Time" ? sortOrder || undefined : undefined
+                }
+                onClick={() => handleSort("Time")}
+              >
+                Time (ms)
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
                 active={sortField === "State"}
                 direction={
                   sortField === "State" ? sortOrder || undefined : undefined
@@ -185,6 +205,7 @@ const TemplateResultsList = () => {
               </TableCell>
               <TableCell>{result.Response.ContentLength || ""}</TableCell>
               <TableCell>{result.TemplateID}</TableCell>
+              <TableCell>{result.Response.Time + "ms" || ""}</TableCell>
               <TableCell>
                 <Chip
                   label={result.State}

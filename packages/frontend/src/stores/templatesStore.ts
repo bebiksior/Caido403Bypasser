@@ -30,6 +30,10 @@ export const useTemplates = () => {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["templates"],
     queryFn: () => handleBackendCall(sdk.backend.getTemplates(), sdk),
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchInterval: false,
   });
 
   return { templates: data, isLoading, isError, error };
@@ -49,12 +53,14 @@ export const useTemplate = (templateID: string) => {
 
 // Calls sdk.backend.addTemplate(template)
 export const useAddTemplate = () => {
-  const queryClient = useQueryClient();
   const sdk = useSDKStore.getState().getSDK();
   const { mutate, isError, error } = useMutation({
-    mutationFn: (template: Template) =>
-      handleBackendCall(sdk.backend.saveTemplate(template.id, template), sdk),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["templates"] }),
+    mutationFn: (template: Template) => {
+      return handleBackendCall(
+        sdk.backend.saveTemplate(template.id, template),
+        sdk,
+      );
+    },
   });
   return { addTemplate: mutate, isError, error };
 };
@@ -86,7 +92,7 @@ export const removeTemplate = async (templateID: string) => {
   const sdk = useSDKStore.getState().getSDK();
   const result = await handleBackendCall(
     sdk.backend.removeTemplate(templateID),
-    sdk
+    sdk,
   );
   return result;
 };
@@ -94,12 +100,12 @@ export const removeTemplate = async (templateID: string) => {
 // Calls sdk.backend.saveTemplate(currentTemplateID, template)
 export const saveTemplate = async (
   currentTemplateID: string,
-  template: Template
+  template: Template,
 ) => {
   const sdk = useSDKStore.getState().getSDK();
   const result = await handleBackendCall(
     sdk.backend.saveTemplate(currentTemplateID, template),
-    sdk
+    sdk,
   );
   return result;
 };
@@ -109,7 +115,7 @@ export const exportTemplate = async (templateID: string) => {
   const sdk = useSDKStore.getState().getSDK();
   const result = await handleBackendCall(
     sdk.backend.exportTemplate(templateID),
-    sdk
+    sdk,
   );
   return result;
 };
@@ -119,14 +125,14 @@ export const importTemplate = async (rawTemplate: string) => {
   const sdk = useSDKStore.getState().getSDK();
   const result = await handleBackendCall(
     sdk.backend.importTemplate(rawTemplate),
-    sdk
+    sdk,
   );
   return result;
 };
 
 export const addTempTemplate = async (
   template: Template,
-  queryClient: QueryClient
+  queryClient: QueryClient,
 ) => {
   queryClient.setQueryData(["templates"], (oldTemplates: Template[]) => [
     ...oldTemplates,
@@ -136,20 +142,20 @@ export const addTempTemplate = async (
 
 export const removeTempTemplate = async (
   templateID: string,
-  queryClient: QueryClient
+  queryClient: QueryClient,
 ) => {
   queryClient.setQueryData(["templates"], (oldTemplates: Template[]) =>
-    oldTemplates.filter((t) => t.id !== templateID)
+    oldTemplates.filter((t) => t.id !== templateID),
   );
 };
 
 export const updateTempTemplate = async (
   templateID: string,
   fields: Partial<Template>,
-  queryClient: QueryClient
+  queryClient: QueryClient,
 ) => {
   queryClient.setQueryData(["templates"], (oldTemplates: Template[]) =>
-    oldTemplates.map((t) => (t.id === templateID ? { ...t, ...fields } : t))
+    oldTemplates.map((t) => (t.id === templateID ? { ...t, ...fields } : t)),
   );
 
   if (fields.id && fields.id !== templateID) {
@@ -165,7 +171,7 @@ export const initializeEvents = (sdk: CaidoSDK, queryClient: QueryClient) => {
     "templates:created",
     (template: Template, oldTemplateID?: string) => {
       addTempTemplate(template, queryClient);
-    }
+    },
   );
 
   sdk.backend.onEvent("templates:deleted", (templateID: string) => {
@@ -176,6 +182,6 @@ export const initializeEvents = (sdk: CaidoSDK, queryClient: QueryClient) => {
     "templates:updated",
     (templateID: string, fields: Partial<Template>) => {
       updateTempTemplate(templateID, fields, queryClient);
-    }
+    },
   );
 };

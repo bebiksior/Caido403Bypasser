@@ -8,14 +8,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { initializeEvents as initializeScansEvents } from "@/stores/scansStore";
 import { initializeEvents as initializeTemplateResultsEvents } from "@/stores/templateResultsStore";
 import { initializeEvents as initializeTemplatesEvents } from "@/stores/templatesStore";
-import { RequestSpecRaw } from 'caido:utils';
-import { SDK } from "caido:plugin";
 
 const queryClient = new QueryClient();
 
 export const init = (sdk: CaidoSDK) => {
   initializeSDK(sdk);
-  
+
   initializeScansEvents(sdk, queryClient);
   initializeTemplateResultsEvents(sdk, queryClient);
   initializeTemplatesEvents(sdk, queryClient);
@@ -30,7 +28,7 @@ export const init = (sdk: CaidoSDK) => {
   root.render(
     <QueryClientProvider client={queryClient}>
       <App />
-    </QueryClientProvider>
+    </QueryClientProvider>,
   );
 
   // Add the root element to the SDK navigation page
@@ -39,7 +37,9 @@ export const init = (sdk: CaidoSDK) => {
   });
 
   // Register a sidebar item
-  sdk.sidebar.registerItem("403 Bypasser", "/403bypasser");
+  sdk.sidebar.registerItem("403 Bypasser", "/403bypasser", {
+    icon: "fas fa-bug",
+  });
 
   sdk.commands.register("403bypasser-scan", {
     name: "403Bypasser: Scan",
@@ -49,10 +49,12 @@ export const init = (sdk: CaidoSDK) => {
   sdk.menu.registerItem({
     type: "Request",
     commandId: "403bypasser-scan",
+    leadingIcon: "fas fa-bug",
   });
 
   sdk.menu.registerItem({
     type: "RequestRow",
     commandId: "403bypasser-scan",
+    leadingIcon: "fas fa-bug",
   });
-}
+};

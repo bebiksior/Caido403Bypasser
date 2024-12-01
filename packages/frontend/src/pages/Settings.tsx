@@ -9,7 +9,9 @@ export default function SettingsPage() {
   const sdk = useSDKStore.getState().getSDK();
   const { data, isLoading, isError, error } = useSettings();
   const { updateSettings } = useUpdateSettings();
-  const [draftSettings, setDraftSettings] = useState<Settings | undefined>(undefined);
+  const [draftSettings, setDraftSettings] = useState<Settings | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     if (data) {
@@ -20,7 +22,6 @@ export default function SettingsPage() {
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error: {error?.message}</div>;
   if (!data || !draftSettings) return <div>No data</div>;
-
 
   const handleSave = () => {
     if (!draftSettings) return;

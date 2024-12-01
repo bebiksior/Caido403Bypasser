@@ -11,14 +11,22 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import RestoreIcon from "@mui/icons-material/Restore";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useSDKStore } from "@/stores/sdkStore";
-import { importTemplate, useTemplatesLocalStore, useAddTemplate, useResetTemplates, useClearTemplates } from "@/stores/templatesStore";
+import {
+  importTemplate,
+  useTemplatesLocalStore,
+  useAddTemplate,
+  useResetTemplates,
+  useClearTemplates,
+} from "@/stores/templatesStore";
 
 export default function TemplatesPage() {
   const sdk = useSDKStore.getState().getSDK();
-  
-  const { setSelectedTemplateID } = useTemplatesLocalStore();
+
+  const setSelectedTemplateID = useTemplatesLocalStore(
+    (state) => state.setSelectedTemplateID,
+  );
   const { addTemplate } = useAddTemplate();
-  
+
   const { resetTemplates } = useResetTemplates();
   const { clearTemplates } = useClearTemplates();
 
@@ -38,7 +46,7 @@ export default function TemplatesPage() {
       ...baseTemplate,
       id: `new-template-${Date.now()}`,
     };
-    
+
     addTemplate(newTemplate);
     setSelectedTemplateID(newTemplate.id);
   }, []);
@@ -75,7 +83,7 @@ export default function TemplatesPage() {
   return (
     <StyledSplitter>
       {/* Templates */}
-      <StyledBox>
+      <StyledBox className="flex flex-col">
         <div className="flex justify-between items-center p-5">
           <h1 className="font-bold text-2xl m-0">Templates</h1>
           <div className="flex gap-3">
@@ -86,11 +94,7 @@ export default function TemplatesPage() {
             >
               Actions
             </Button>
-            <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-            >
+            <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
               <MenuItem onClick={onImportClick}>
                 <CloudUploadIcon className="mr-2" /> Import
               </MenuItem>

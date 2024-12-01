@@ -19,23 +19,28 @@ import { useTemplates, useTemplatesLocalStore } from "@/stores/templatesStore";
 import useTestStore from "@/stores/testsStore";
 import { useSettings } from "@/stores/settingsStore";
 
-const TopPanel = () => {
+const EditorPanel = () => {
   const sdk = useSDKStore.getState().getSDK();
   const { selectedTemplateID } = useTemplatesLocalStore();
   const { templates } = useTemplates();
   const { data: settings, isLoading, isError, error } = useSettings();
-  const { testContent, setTestResults } = useTestStore();
-  
+
+  const testContent = useTestStore((state) => state.testContent);
+  const setTestResults = useTestStore((state) => state.setTestResults);
+
   const [aiDialogVisible, setAIDialogVisible] = useState(false);
   const [aiPrompt, setAIPrompt] = useState("");
+
   const [draftId, setDraftId] = useState("");
   const [draftDescription, setDraftDescription] = useState("");
   const [draftScript, setDraftScript] = useState("");
 
   const selectedTemplate = useMemo(
     () => templates?.find((t) => t.id === selectedTemplateID),
-    [templates, selectedTemplateID]
+    [templates, selectedTemplateID],
   );
+
+  if (!selectedTemplate) return;
 
   useEffect(() => {
     if (selectedTemplate) {
@@ -75,7 +80,7 @@ const TopPanel = () => {
 
     await handleBackendCall(
       sdk.backend.saveTemplate(selectedTemplate.id, updatedTemplate),
-      sdk
+      sdk,
     );
 
     sdk.window.showToast("Template saved", { variant: "success" });
@@ -101,7 +106,7 @@ const TopPanel = () => {
 
         const scriptMatch = /---SCRIPT\s*?\n([\s\S]+)/.exec(aiResponse);
         if (scriptMatch) setDraftScript(scriptMatch[1] || "");
-      }
+      },
     );
   }, [aiPrompt, settings]);
 
@@ -152,6 +157,7 @@ const TopPanel = () => {
               value={draftScript}
               onChange={(value) => setDraftScript(value)}
               style={{ width: "100%", height: "220px" }}
+              fontSize="100%"
               name="modificationScript"
               setOptions={{ useWorker: false }}
             />
@@ -189,7 +195,11 @@ const TopPanel = () => {
                 minRows={10}
                 value={aiPrompt}
                 onChange={(e) => setAIPrompt(e.target.value)}
-                style={{ width: "100%", fontSize: "14px", background: "var(--c-gray-800)" }}
+                style={{
+                  width: "100%",
+                  fontSize: "14px",
+                  background: "var(--c-gray-800)",
+                }}
               />
               <Button variant="contained" onClick={onAIAskClick}>
                 Ask AI
@@ -202,4 +212,4 @@ const TopPanel = () => {
   );
 };
 
-export default TopPanel;
+export default EditorPanel;
