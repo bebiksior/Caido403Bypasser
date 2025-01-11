@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   HTTPRequestEditor,
   HTTPResponseEditor,
@@ -27,6 +27,7 @@ export const HTTPEditor: React.FC<HTTPEditorProps> = ({
   const sdk = useSDKStore.getState().getSDK();
   const editorRef = useRef<EditorType | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [hash, setHash] = useState(window.location.hash);
 
   const setValue = (value: string) => {
     const view = editorRef.current?.getEditorView();
@@ -40,7 +41,7 @@ export const HTTPEditor: React.FC<HTTPEditorProps> = ({
     });
   };
 
-  useEffect(() => {
+  const initializeEditor = () => {
     if (!containerRef.current) return;
     const newEditor =
       type === "request"
@@ -53,20 +54,42 @@ export const HTTPEditor: React.FC<HTTPEditorProps> = ({
 
     const card = newEditor.getEditorView()?.dom?.closest(".c-card");
     if (card) {
-      if (removeFooter) card?.querySelector(".c-card__footer")?.remove();
-      if (removeHeader) card?.querySelector(".c-card__header")?.remove();
+      if (removeFooter) card.querySelector(".c-card__footer")?.remove();
+      if (removeHeader) card.querySelector(".c-card__header")?.remove();
     }
+    return newEditor;
+  };
+
+  useEffect(() => {
+    const newEditor = initializeEditor();
 
     return () => {
       if (containerRef.current && newEditor) {
         containerRef.current.removeChild(newEditor.getElement());
       }
     };
-  }, [sdk, type]);
+  }, [sdk, type, hash]);
 
   useEffect(() => {
     if (editorRef.current) setValue(value);
   }, [value]);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const newHash = window.location.hash;
+      if (newHash !== hash) {
+        setHash(newHash);
+      }
+    });
+
+    observer.observe(document.body, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+    });
+
+    return () => observer.disconnect();
+  }, [hash]);
 
   return <div style={{ height: "100%", ...style }} ref={containerRef} />;
 };

@@ -1,5 +1,6 @@
 import { DefineEvents, SDK } from "caido:plugin";
 import { Scan, Template, TemplateResult } from "shared";
+import { ScanError } from "./errors/ScanError";
 
 export type BackendEvents = DefineEvents<{
   // Templates
@@ -27,6 +28,7 @@ export type BackendEvents = DefineEvents<{
   "scans:updated": (scanID: number, scan: Partial<Scan>) => void;
   "scans:deleted": (scanID: number) => void;
   "scans:cleared": () => void;
+  "scans:error": (scanID: number, errorMessage: string) => void;
 }>;
 
 export type CaidoBackendSDK = SDK<never, BackendEvents>;

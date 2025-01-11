@@ -37,13 +37,27 @@ export const init = (sdk: CaidoSDK) => {
   });
 
   // Register a sidebar item
-  sdk.sidebar.registerItem("403 Bypasser", "/403bypasser", {
+  const sidebarItem = sdk.sidebar.registerItem("403 Bypasser", "/403bypasser", {
     icon: "fas fa-bug",
+  });
+
+  let currentPath = window.location.hash;
+  new MutationObserver(() => {
+    const newPath = window.location.hash;
+    if (newPath !== currentPath) {
+      currentPath = newPath;
+      if (currentPath === "#/403bypasser") {
+        sidebarItem.setCount(0);
+      }
+    }
+  }).observe(document.body, {
+    childList: true,
+    subtree: true,
   });
 
   sdk.commands.register("403bypasser-scan", {
     name: "403Bypasser: Scan",
-    run: (context) => runScan(sdk, context),
+    run: (context) => runScan(sdk, context, sidebarItem.setCount),
   });
 
   sdk.menu.registerItem({

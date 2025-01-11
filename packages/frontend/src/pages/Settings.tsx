@@ -94,7 +94,7 @@ export default function SettingsPage() {
               id="templatesDelay"
               value={draftSettings?.templatesDelay?.toString()}
               onChange={(e) =>
-                updateDraftSettings("templatesDelay", e.target.value)
+                updateDraftSettings("templatesDelay", parseInt(e.target.value))
               }
               className="w-full"
             />
@@ -110,7 +110,7 @@ export default function SettingsPage() {
               id="scanTimeout"
               value={draftSettings?.scanTimeout?.toString()}
               onChange={(e) =>
-                updateDraftSettings("scanTimeout", e.target.value)
+                updateDraftSettings("scanTimeout", parseInt(e.target.value))
               }
               className="w-full"
             />

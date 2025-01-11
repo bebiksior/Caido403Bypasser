@@ -33,7 +33,7 @@ const TestsPanel = () => {
             removeFooter={true}
           />
           <div className="flex justify-between items-center">
-            <p className="m-0">
+            <p className="m-0 ml-2">
               {testResults.length > 1 &&
                 " (" +
                   (currentTestResultIndex + 1) +

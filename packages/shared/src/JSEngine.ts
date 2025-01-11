@@ -150,9 +150,9 @@ export function runScript(
 
     setBody: (input: string, update: string | ((body: string) => string)) => {
       const lines = input.split("\r\n");
-      const newBody =
-        typeof update === "function" ? update(lines.join("\r\n")) : update;
       const bodyIndex = lines.findIndex((line) => line.trim() === "");
+      const currentBody = bodyIndex === -1 ? "" : lines.slice(bodyIndex + 1).join("\r\n");
+      const newBody = typeof update === "function" ? update(currentBody) : update;
 
       if (bodyIndex === -1) {
         lines.push("");

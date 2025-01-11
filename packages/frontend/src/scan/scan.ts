@@ -1,7 +1,9 @@
 import { CaidoSDK } from "@/types/types";
 import { handleBackendCall } from "@/utils/utils";
 import { CommandContext } from "@caido/sdk-frontend/src/types";
-export const runScan = async (sdk: CaidoSDK, context: CommandContext) => {
+
+let sidebarCount = 0;
+export const runScan = async (sdk: CaidoSDK, context: CommandContext, setCount: (count: number) => void) => {
   const createScanConfig = (request: {
     isTls: boolean;
     host: string;
@@ -28,11 +30,12 @@ export const runScan = async (sdk: CaidoSDK, context: CommandContext) => {
   if (context.type === "RequestContext") {
     const runningScan = await runSingleScan(createScanConfig(context.request));
 
+    sidebarCount += 1;
+    setCount(sidebarCount);
+
     sdk.window.showToast(`Running scan for ${runningScan.Target.Host}`, {
       duration: 3000,
     });
-
-    sdk.navigation.goTo("/403bypasser");
   } else if (context.type === "RequestRowContext") {
     const requests = context.requests.slice(0, 25);
 
@@ -50,10 +53,11 @@ export const runScan = async (sdk: CaidoSDK, context: CommandContext) => {
       );
     }
 
+    sidebarCount += requests.length;
+    setCount(sidebarCount);
+
     sdk.window.showToast(`Running scans for ${requests.length} requests`, {
       duration: 3000,
     });
-
-    sdk.navigation.goTo("/403bypasser");
   }
 };
