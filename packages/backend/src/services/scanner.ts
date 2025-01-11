@@ -18,6 +18,14 @@ const BaseTemplateResult: Omit<TemplateResult, "ID"> = {
   State: "Running",
 };
 
+function stringToUint8Array(str: string): Uint8Array {
+  const arr = new Uint8Array(str.length);
+  for (let i = 0; i < str.length; i++) {
+    arr[i] = str.charCodeAt(i);
+  }
+  return arr;
+}
+
 const isCancelled = (scan: Scan) =>
   scan.State === "Cancelled" || scan.State === "Timed Out";
 
@@ -27,14 +35,14 @@ function getNextTemplateResultID(scanStore: ScanStore, scanID: number): number {
 
   const highestID = scan.Results.reduce(
     (max, result) => Math.max(max, result.ID),
-    0,
+    0
   );
   return highestID + 1;
 }
 
 export const runScanWorker = async (
   sdk: CaidoBackendSDK,
-  scan: Scan,
+  scan: Scan
 ): Promise<void> => {
   const settingsStore = SettingsStore.get();
   const settings = settingsStore.getSettings();
@@ -86,11 +94,7 @@ export const runScanWorker = async (
         sdk.api.send("templateResults:created", scan.ID, templateResult);
 
         const spec = new RequestSpecRaw(scan.Target.URL);
-        spec.setRaw(
-          Uint8Array.from(
-            modifiedRequest.split("").map((letter) => letter.charCodeAt(0)),
-          ),
-        );
+        spec.setRaw(stringToUint8Array(modifiedRequest));
 
         const { response } = await sdk.requests.send(spec);
         const body = response.getRaw().toText() || "";
@@ -111,12 +115,12 @@ export const runScanWorker = async (
           "templateResults:updated",
           scan.ID,
           templateResultID,
-          updateFields,
+          updateFields
         );
 
         if (settings.templatesDelay > 0)
           await new Promise((resolve) =>
-            setTimeout(resolve, settings.templatesDelay),
+            setTimeout(resolve, settings.templatesDelay)
           );
       } catch (error) {
         sdk.console.log(`Error processing template ${template.id}: ${error}`);
@@ -136,7 +140,7 @@ export const runScanWorker = async (
           "templateResults:updated",
           scan.ID,
           templateResultID,
-          updateFields,
+          updateFields
         );
       }
     }
@@ -164,7 +168,7 @@ export const runScanWorker = async (
 export const sendRequest = async (
   rawRequest: string,
   url: string,
-  sdk: SDK,
+  sdk: SDK
 ): Promise<RequestResponse> => {
   const spec = new RequestSpecRaw(url);
   spec.setRaw(rawRequest);
