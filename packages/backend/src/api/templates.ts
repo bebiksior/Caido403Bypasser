@@ -6,7 +6,7 @@ import readYamlFile from "read-yaml-file";
 import YAML from "yaml";
 import type { Result } from "shared";
 import { TemplateStore } from "../stores/templates";
-import { fixWindowsPath, getTemplateDir, getTemplatePath, validateTemplate } from "../utils/utils";
+import { getTemplateDir, getTemplatePath, validateTemplate } from "../utils/utils";
 import { CaidoBackendSDK } from "@/types";
 import defaultTemplates from "@/defaultTemplates/defaultTemplates";
 
@@ -117,7 +117,7 @@ export async function loadTemplates(sdk: CaidoBackendSDK) {
   const loadTemplatePromises = files
     .filter((file) => path.extname(file).toLowerCase() === ".yaml")
     .map(async (file) => {
-      const templatePath = fixWindowsPath(path.join(sdk.meta.path(), "templates", file));
+      const templatePath = path.join(sdk.meta.path(), "templates", file);
       try {
         const data = (await readYamlFile(templatePath)) as Template;
         const { valid, message } = validateTemplate(data);
@@ -230,7 +230,7 @@ export async function saveTemplate(
     if (!valid) {
       return { kind: "Error", error: `Invalid template: ${message}` };
     }
-    
+
     const template = templateStore.getTemplate(currentTemplateID);
 
     if (template) {

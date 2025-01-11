@@ -12,19 +12,12 @@ export async function ensureDir(sdk: SDK): Promise<boolean> {
   }
 }
 
-export function fixWindowsPath(inputPath: string): string {
-  if (/^[a-zA-Z]:[^\\/]/.test(inputPath)) {
-    return inputPath.replace(/^([a-zA-Z]:)(.*)$/, '$1\\$2');
-  }
-  return inputPath;
-}
-
 export function getTemplatePath(sdk: SDK, templateID: string): string {
-  return fixWindowsPath(path.join(sdk.meta.path(), "templates", templateID + ".yaml"));
+  return path.join(sdk.meta.path(), "templates", templateID + ".yaml");
 }
 
 export function getTemplateDir(sdk: SDK): string {
-  return fixWindowsPath(path.join(sdk.meta.path(), "templates"));
+  return path.join(sdk.meta.path(), "templates");
 }
 
 export function parseRequest(requestString: string): Record<string, any> {
