@@ -1,61 +1,73 @@
 export interface Helper {
+  // Setters
   setLine: (
     input: string,
     lineNumber: number,
-    updateFn: (line: string | undefined) => string,
+    updateFn: (line: string | undefined) => string
   ) => string;
-  setPath: (input: string, updateFn: (path: string) => string) => string;
-  setQuery: (input: string, updateFn: (query: string) => string) => string;
-  setMethod: (input: string, updateFn: (method: string) => string) => string;
+  setPath: (
+    input: string,
+    update: string | ((path: string) => string)
+  ) => string;
+  setQuery: (
+    input: string,
+    update: string | ((query: string) => string)
+  ) => string;
+  setMethod: (
+    input: string,
+    update: string | ((method: string) => string)
+  ) => string;
+  setBody: (
+    input: string,
+    update: string | ((body: string) => string)
+  ) => string;
   addQueryParameter: (input: string, param: string) => string;
   addHeader: (input: string, header: string) => string;
   removeHeader: (input: string, header: string) => string;
-  setBody: (input: string, body: string) => string;
+
+  // Getters
   getMethod: (input: string) => string;
   getPath: (input: string) => string;
   getQuery: (input: string) => string;
+  getBody: (input: string) => string;
+
+  // Checks
   hasHeader: (input: string, header: string) => boolean;
 }
 
-type TemplateOutput = {
+interface TemplateOutput {
   success: boolean;
   requests: string[];
-  error?: any;
-};
+  error?: unknown;
+}
 
-export const runScript = (
+export function runScript(
   initialInput: string,
-  script: string,
-): TemplateOutput => {
+  script: string
+): TemplateOutput {
   const helper: Helper = {
     setLine: (
       input: string,
       lineNumber: number,
-      updateFn: (line: string | undefined) => string,
+      updateFn: (line: string | undefined) => string
     ) => {
       const lines = input.split("\r\n");
       lines[lineNumber] = updateFn(lines[lineNumber]);
       return lines.join("\r\n");
     },
 
-    setPath: (input: string, updateFn: (path: string) => string) => {
+    setPath: (input: string, update: string | ((path: string) => string)) => {
       const lines = input.split("\r\n");
       const firstLine = lines[0];
-      if (!firstLine) {
-        throw new Error("No lines in input");
-      }
+      if (!firstLine) throw new Error("No lines in input");
 
       const [method, url, version] = firstLine.split(" ");
-      if (!method || !url || !version) {
-        throw new Error("Invalid first line");
-      }
+      if (!method || !url || !version) throw new Error("Invalid first line");
 
       const [path, query] = url.split("?", 2);
-      if (!path) {
-        throw new Error("Invalid URL");
-      }
+      if (!path) throw new Error("Invalid URL");
 
-      const updatedPath = updateFn(path);
+      const updatedPath = typeof update === "function" ? update(path) : update;
 
       lines[0] = query
         ? `${method} ${updatedPath}?${query} ${version}`
@@ -67,14 +79,10 @@ export const runScript = (
     addQueryParameter: (input: string, param: string) => {
       const lines = input.split("\r\n");
       const firstLine = lines[0];
-      if (!firstLine) {
-        throw new Error("No lines in input");
-      }
+      if (!firstLine) throw new Error("No lines in input");
 
       const [method, url, version] = firstLine.split(" ");
-      if (!method || !url || !version) {
-        throw new Error("Invalid first line");
-      }
+      if (!method || !url || !version) throw new Error("Invalid first line");
 
       const [path, query] = url.split("?", 2);
       const updatedQuery = query ? `${query}&${param}` : param;
@@ -86,20 +94,17 @@ export const runScript = (
       return lines.join("\r\n");
     },
 
-    setQuery: (input: string, updateFn: (query: string) => string) => {
+    setQuery: (input: string, update: string | ((query: string) => string)) => {
       const lines = input.split("\r\n");
       const firstLine = lines[0];
-      if (!firstLine) {
-        throw new Error("No lines in input");
-      }
+      if (!firstLine) throw new Error("No lines in input");
 
       const [method, url, version] = firstLine.split(" ");
-      if (!method || !url || !version) {
-        throw new Error("Invalid first line");
-      }
+      if (!method || !url || !version) throw new Error("Invalid first line");
 
       const [path, query] = url.split("?", 2);
-      const updatedQuery = updateFn(query || "");
+      const updatedQuery =
+        typeof update === "function" ? update(query || "") : update;
 
       lines[0] = updatedQuery
         ? `${method} ${path}?${updatedQuery} ${version}`
@@ -108,16 +113,20 @@ export const runScript = (
       return lines.join("\r\n");
     },
 
-    setMethod: (input: string, updateFn: (method: string) => string) => {
+    setMethod: (
+      input: string,
+      update: string | ((method: string) => string)
+    ) => {
       const lines = input.split("\r\n");
       const firstLine = lines[0];
-      if (!firstLine) {
-        throw new Error("No lines in input");
-      }
+      if (!firstLine) throw new Error("No lines in input");
 
       const [method, path, version] = firstLine.split(" ");
       if (method && path && version) {
-        lines[0] = `${updateFn(method)} ${path} ${version}`;
+        lines[0] =
+          typeof update === "function"
+            ? `${update(method)} ${path} ${version}`
+            : `${update} ${path} ${version}`;
         return lines.join("\r\n");
       }
       return input;
@@ -139,45 +148,50 @@ export const runScript = (
       return lines.filter((line) => !line.startsWith(header)).join("\r\n");
     },
 
-    setBody: (input: string, body: string) => {
+    setBody: (input: string, update: string | ((body: string) => string)) => {
       const lines = input.split("\r\n");
+      const newBody =
+        typeof update === "function" ? update(lines.join("\r\n")) : update;
       const bodyIndex = lines.findIndex((line) => line.trim() === "");
+
       if (bodyIndex === -1) {
         lines.push("");
-        lines.push(body);
+        lines.push(newBody);
       } else {
-        lines.splice(bodyIndex + 1, lines.length - bodyIndex - 1, body);
+        lines.splice(bodyIndex + 1, lines.length - bodyIndex - 1, newBody);
       }
       return lines.join("\r\n");
     },
 
     getMethod: (input: string) => {
       const firstLine = input.split("\r\n")[0];
-      if (!firstLine) {
-        throw new Error("No lines in input");
-      }
+      if (!firstLine) throw new Error("No lines in input");
       return firstLine.split(" ")[0] || "";
     },
 
     getPath: (input: string) => {
       const firstLine = input.split("\r\n")[0];
-      if (!firstLine || !firstLine.includes(" ")) {
+      if (!firstLine || !firstLine.includes(" "))
         throw new Error("Invalid first line");
-      }
       return firstLine.split(" ")[1]?.split("?")[0] || "";
+    },
+
+    getBody: (input: string) => {
+      const lines = input.split("\r\n");
+      const bodyIndex = lines.findIndex((line) => line.trim() === "");
+      if (bodyIndex === -1) return "";
+      return lines.slice(bodyIndex + 1).join("\r\n");
     },
 
     getQuery: (input: string) => {
       const firstLine = input.split("\r\n")[0];
-      if (!firstLine || !firstLine.includes(" ")) {
+      if (!firstLine || !firstLine.includes(" "))
         throw new Error("Invalid first line");
-      }
       return firstLine.split(" ")[1]?.split("?")[1] || "";
     },
 
     hasHeader: (input: string, header: string) => {
       const lines = input.split("\r\n");
-
       for (let i = 1; i < lines.length; i++) {
         const line = lines[i]?.trim();
         if (line === "") break;
@@ -199,7 +213,7 @@ export const runScript = (
     return {
       success: false,
       requests: [],
-      error: error,
+      error,
     };
   }
-};
+}
