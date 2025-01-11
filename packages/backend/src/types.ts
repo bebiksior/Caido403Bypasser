@@ -29,6 +29,7 @@ export type BackendEvents = DefineEvents<{
   "scans:deleted": (scanID: number) => void;
   "scans:cleared": () => void;
   "scans:error": (scanID: number, errorMessage: string) => void;
+  "plugin:outdated": () => void;
 }>;
 
 export type CaidoBackendSDK = SDK<never, BackendEvents>;

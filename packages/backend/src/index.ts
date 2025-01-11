@@ -33,6 +33,7 @@ import {
 import { ensureDir } from "./utils/utils";
 import defaultTemplates from "@/defaultTemplates/defaultTemplates";
 import { TemplateStore } from "@/stores/templates";
+import { CaidoBackendSDK } from "./types";
 
 export type { BackendEvents } from "./types";
 
@@ -71,7 +72,7 @@ export async function init(sdk: SDK<API>) {
 
   if (firstTime) {
     sdk.console.log("First time setup, adding default templates");
-    
+
     const templateStore = TemplateStore.get();
     templateStore.addTemplates(defaultTemplates);
     await writeTemplates(sdk, defaultTemplates);
@@ -102,9 +103,24 @@ export async function init(sdk: SDK<API>) {
   sdk.api.register("getTemplateResults", getTemplateResults);
   sdk.api.register("getTemplateResult", getTemplateResult);
   sdk.api.register("clearScans", clearScans);
-  sdk.api.register("cancelScan", cancelScan); 
+  sdk.api.register("cancelScan", cancelScan);
 
   // Settings
   sdk.api.register("getSettings", getSettings);
   sdk.api.register("updateSettings", updateSettings);
+
+  setTimeout(() => {
+    checkUpdates(sdk);
+  }, 2000);
+}
+
+async function checkUpdates(sdk: CaidoBackendSDK) {
+  try {
+    const isOutdated = await sdk.meta.updateAvailable();
+    if (isOutdated) {
+      sdk.api.send("plugin:outdated");
+    }
+  } catch {
+    sdk.console.log("Can't check for updates: Caido Cloud is offline.");
+  }
 }
