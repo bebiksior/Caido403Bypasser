@@ -1,16 +1,43 @@
 import { CaidoSDK } from "@/types/types";
-import { handleBackendCall } from "@/utils/utils";
+import { getSelectedRequest, handleBackendCall } from "@/utils/utils";
 import { CommandContext } from "@caido/sdk-frontend/src/types";
 
 let sidebarCount = 0;
-export const runScan = async (sdk: CaidoSDK, context: CommandContext, setCount: (count: number) => void) => {
+let observer: MutationObserver | null = null;
+
+export const runScan = async (
+  sdk: CaidoSDK,
+  context: CommandContext,
+  setCount: (count: number) => void
+) => {
+  let currentPath = window.location.hash;
+  if (!observer) {
+    observer = new MutationObserver(() => {
+      const newPath = window.location.hash;
+      if (newPath !== currentPath) {
+        currentPath = newPath;
+        if (currentPath === "#/403bypasser") {
+          sidebarCount = 0;
+          setCount(sidebarCount);
+        }
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  }
+
   const createScanConfig = (request: {
     isTls: boolean;
     host: string;
     port: number;
     raw?: string;
   }) => ({
-    URL: `${request.isTls ? "https" : "http"}://${request.host}:${request.port}`,
+    URL: `${request.isTls ? "https" : "http"}://${request.host}:${
+      request.port
+    }`,
     Host: request.host,
     Port: request.port,
     IsTls: request.isTls,
@@ -18,11 +45,11 @@ export const runScan = async (sdk: CaidoSDK, context: CommandContext, setCount: 
   });
 
   const runSingleScan = async (
-    scanConfig: ReturnType<typeof createScanConfig>,
+    scanConfig: ReturnType<typeof createScanConfig>
   ) => {
     const newScan = await handleBackendCall(
       sdk.backend.addScan(scanConfig),
-      sdk,
+      sdk
     );
     return handleBackendCall(sdk.backend.runScan(newScan.ID), sdk);
   };
@@ -49,7 +76,7 @@ export const runScan = async (sdk: CaidoSDK, context: CommandContext, setCount: 
         createScanConfig({
           ...request,
           raw: req.request.raw,
-        }),
+        })
       );
     }
 
@@ -59,5 +86,24 @@ export const runScan = async (sdk: CaidoSDK, context: CommandContext, setCount: 
     sdk.window.showToast(`Running scans for ${requests.length} requests`, {
       duration: 3000,
     });
+  } else if (context.type === "BaseContext") {
+    const request = getSelectedRequest(sdk);
+    if (request) {
+      const runningScan = await runSingleScan(
+        createScanConfig({
+          raw: request.raw,
+          host: request.host ?? "",
+          port: request.port,
+          isTls: request.isTLS,
+        })
+      );
+
+      sidebarCount += 1;
+      setCount(sidebarCount);
+
+      sdk.window.showToast(`Running scan for ${runningScan.Target.Host}`, {
+        duration: 3000,
+      });
+    }
   }
 };

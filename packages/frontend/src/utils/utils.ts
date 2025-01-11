@@ -1,4 +1,5 @@
 import { useSDKStore } from "@/stores/sdkStore";
+import { CaidoSDK } from "@/types/types";
 import { Result } from "shared";
 
 export async function handleBackendCall<T>(
@@ -108,4 +109,88 @@ export function formatDate(date: Date): string {
   const seconds = String(date.getSeconds()).padStart(2, "0");
 
   return `${hours}:${minutes}:${seconds}`;
+}
+
+export function getSelectedRequest(sdk: CaidoSDK) {
+  function getPortAndTLS(url: string) {
+    const isSecure = url.startsWith("https://");
+    let portNumber = isSecure ? 443 : 80;
+
+    try {
+      const urlObj = new URL(url);
+      if (urlObj.port) {
+        portNumber = parseInt(urlObj.port);
+      }
+    } catch {}
+
+    return {
+      isTLS: isSecure,
+      port: portNumber,
+    };
+  }
+
+  function getHost(url: string) {
+    const urlObj = new URL(url);
+    return urlObj.host.split(":")[0];
+  }
+
+  switch (location.hash) {
+    case "#/automate":
+    case "#/http-history": {
+      const { innerText: historyRaw } = document.querySelector(
+        "[data-language='http-request']"
+      ) as HTMLElement;
+      let historyUrl: string;
+      const historyUrlElement = document.querySelector(
+        ".c-request-header__label"
+      );
+      const automateUrlElement = document.querySelector(
+        ".c-automate-session-toolbar__connection-info input"
+      ) as HTMLInputElement;
+
+      if (historyUrlElement) {
+        historyUrl = (historyUrlElement as HTMLElement).innerText;
+      } else if (automateUrlElement) {
+        historyUrl = automateUrlElement.value;
+      } else {
+        throw new Error("Could not find URL element");
+      }
+
+      const newHistoryRaw = historyRaw.replace(/\n/g, "\r\n");
+
+      const { isTLS, port } = getPortAndTLS(historyUrl);
+
+      return {
+        raw: newHistoryRaw,
+        isTLS,
+        port,
+        host: getHost(historyUrl),
+      };
+    }
+
+    case "#/replay": {
+      const { value: replayUrl } = document.querySelector(
+        ".c-replay-session-toolbar__connection-info input"
+      ) as HTMLInputElement;
+
+      const { innerText: replayRaw } = document.querySelector(
+        "[data-language='http-request']"
+      ) as HTMLElement;
+
+      const newReplayRaw = replayRaw.replace(/\n/g, "\r\n");
+
+      const { isTLS, port } = getPortAndTLS(replayUrl);
+
+      return {
+        raw: newReplayRaw,
+        isTLS,
+        port,
+        host: getHost(replayUrl),
+      };
+    }
+
+    default:
+      console.error(`Can't obtain selected request from ${location.hash}`);
+      throw new Error("Can't obtain selected request");
+  }
 }
