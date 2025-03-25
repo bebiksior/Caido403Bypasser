@@ -1,0 +1,6 @@
+id: x-forwarded-for-bypass
+description: "Adds X-Forwarded-For: 0.0.0.0 header"
+enabled: true
+modificationScript: |-
+  input = helper.addHeader(input, "X-Forwarded-For: 0.0.0.0")
+  return input;

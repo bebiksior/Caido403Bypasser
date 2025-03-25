@@ -13,6 +13,7 @@ import nginxSpringBootBypass from "@/defaultTemplates/nginx-spring-boot-bypass.y
 import nginxTrimInconsistencies from "@/defaultTemplates/nginx-trim-inconsistencies.yaml";
 import sendAllHTTPMethods from "@/defaultTemplates/send-all-http-methods.yaml";
 import unicodeBypassAddEFBC8F from "@/defaultTemplates/unicode-bypass-add-efbc8f.yaml";
+import xForwardedFor from "@/defaultTemplates/x-forwarded-for-bypass.yaml";
 import { Template } from "shared";
 
 const convertToTemplate = (input: Record<string, any>): Template => {
@@ -40,6 +41,7 @@ const defaultTemplates = [
   nginxTrimInconsistencies,
   sendAllHTTPMethods,
   unicodeBypassAddEFBC8F,
+  xForwardedFor,
 ].map(convertToTemplate);
 
 export default defaultTemplates;
