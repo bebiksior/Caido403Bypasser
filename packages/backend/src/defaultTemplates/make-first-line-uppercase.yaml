@@ -1,6 +1,0 @@
-id: make-first-line-uppercase
-description: Converts the first line of the HTTP request to uppercase.
-enabled: true
-modificationScript: |-
-  const newRequest = helper.setLine(input, 0, (prev) => prev.toUpperCase());  
-  return newRequest;
