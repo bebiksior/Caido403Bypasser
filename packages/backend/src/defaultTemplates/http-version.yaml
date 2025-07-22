@@ -1,0 +1,17 @@
+id: http-version
+description: Sends the request using all possible HTTP versions (this one can't
+  be tested properly as we can't update the http protocol used in the connection
+  itself).
+enabled: true
+modificationScript: |
+  const httpVersions = ["HTTP/0.9","HTTP/1.0","HTTP/1.1","HTTP/2.0","HTTP/3.0"];
+  const modifiedRequests = [];
+
+  for (const version of httpVersions) {
+    const newRequest = helper.setLine(input, 0, (prev) => {
+      return prev.replace(/HTTP\/\d\.\d/, version);
+    });
+    modifiedRequests.push(newRequest);
+  }
+
+  return modifiedRequests;
