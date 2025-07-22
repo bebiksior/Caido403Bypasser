@@ -8,7 +8,7 @@ import type { Result } from "shared";
 import { TemplateStore } from "../stores/templates";
 import { getTemplateDir, getTemplatePath, validateTemplate } from "../utils/utils";
 import { CaidoBackendSDK } from "@/types";
-import defaultTemplates from "@/defaultTemplates/defaultTemplates";
+import defaultTemplates from "../defaultTemplates";
 
 export async function getTemplates(sdk: SDK): Promise<Result<Template[]>> {
   const templateStore = TemplateStore.get();

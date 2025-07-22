@@ -31,7 +31,7 @@ import {
   clearTemplates,
 } from "./api/templates";
 import { ensureDir } from "./utils/utils";
-import defaultTemplates from "@/defaultTemplates/defaultTemplates";
+import defaultTemplates from "./defaultTemplates";
 import { TemplateStore } from "@/stores/templates";
 import { CaidoBackendSDK } from "./types";
 
