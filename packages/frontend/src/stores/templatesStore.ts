@@ -1,22 +1,23 @@
 import {
-  QueryClient,
+  type QueryClient,
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useSDKStore } from "@/stores/sdkStore";
+import { type Template } from "shared";
 import { create } from "zustand";
-import { handleBackendCall } from "@/utils/utils";
-import { Template } from "shared";
-import { CaidoSDK } from "@/types/types";
 
-interface TemplateStore {
+import { useSDKStore } from "@/stores/sdkStore";
+import { type FrontendSDK } from "@/types/types";
+import { handleBackendCall } from "@/utils/utils";
+
+type TemplateStore = {
   selectedTemplateID: string | undefined;
   setSelectedTemplateID: (selectedTemplateID: string) => void;
   deselectTemplate: () => void;
 }
 
-export const useTemplatesLocalStore = create<TemplateStore>((set, get) => ({
+export const useTemplatesLocalStore = create<TemplateStore>((set) => ({
   selectedTemplateID: undefined,
   setSelectedTemplateID: (selectedTemplateID: string) =>
     set({ selectedTemplateID }),
@@ -130,7 +131,7 @@ export const importTemplate = async (rawTemplate: string) => {
   return result;
 };
 
-export const addTempTemplate = async (
+export const addTempTemplate = (
   template: Template,
   queryClient: QueryClient,
 ) => {
@@ -140,7 +141,7 @@ export const addTempTemplate = async (
   ]);
 };
 
-export const removeTempTemplate = async (
+export const removeTempTemplate = (
   templateID: string,
   queryClient: QueryClient,
 ) => {
@@ -149,7 +150,7 @@ export const removeTempTemplate = async (
   );
 };
 
-export const updateTempTemplate = async (
+export const updateTempTemplate = (
   templateID: string,
   fields: Partial<Template>,
   queryClient: QueryClient,
@@ -158,7 +159,7 @@ export const updateTempTemplate = async (
     oldTemplates.map((t) => (t.id === templateID ? { ...t, ...fields } : t)),
   );
 
-  if (fields.id && fields.id !== templateID) {
+  if (fields.id !== undefined && fields.id !== templateID) {
     const templatesLocalStore = useTemplatesLocalStore.getState();
     if (templatesLocalStore.selectedTemplateID === templateID) {
       templatesLocalStore.setSelectedTemplateID(fields.id);
@@ -166,10 +167,13 @@ export const updateTempTemplate = async (
   }
 };
 
-export const initializeEvents = (sdk: CaidoSDK, queryClient: QueryClient) => {
+export const initializeEvents = (
+  sdk: FrontendSDK,
+  queryClient: QueryClient,
+) => {
   sdk.backend.onEvent(
     "templates:created",
-    (template: Template, oldTemplateID?: string) => {
+    (template: Template) => {
       addTempTemplate(template, queryClient);
     },
   );

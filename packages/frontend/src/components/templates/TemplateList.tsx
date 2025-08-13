@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useSDKStore } from "@/stores/sdkStore";
 import { handleBackendCall } from "@/utils/utils";
 import { Template } from "shared";

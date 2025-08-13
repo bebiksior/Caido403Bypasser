@@ -1,7 +1,8 @@
-import { defaultTest } from "@/constants";
 import { create } from "zustand";
 
-interface TestStore {
+import { defaultTest } from "@/constants";
+
+type TestStore = {
   testContent: string;
   testResults: string[];
   setTestContent: (content: string) => void;
@@ -12,10 +13,8 @@ interface TestStore {
 const useTestStore = create<TestStore>((set) => ({
   testContent: defaultTest,
   testResults: [],
-  setTestContent: (content: string) =>
-    set(() => ({ testContent: content })),
-  setTestResults: (results: string[]) =>
-    set(() => ({ testResults: results })),
+  setTestContent: (content: string) => set(() => ({ testContent: content })),
+  setTestResults: (results: string[]) => set(() => ({ testResults: results })),
   addTestResult: (result: string) =>
     set((state) => ({ testResults: [...state.testResults, result] })),
 }));

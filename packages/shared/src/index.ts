@@ -2,4 +2,4 @@ export * from "./template";
 export * from "./scan";
 export * from "./result";
 export * from "./settings";
-export * from "./JSEngine";
+export * from "./engine";

@@ -1,14 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "types": ["@caido/sdk-backend", "@modyfi/vite-plugin-yaml/modules"],
-    "baseUrl": "./",
-    "paths": {
-      "@/*": ["src/*"]
-    }
+    "types": ["@caido/sdk-backend"]
   },
-  "include": ["src/**/*.ts"],
-  "tsc-alias": {
-    "resolveFullPaths": true
-  }
+  "include": ["./src/**/*.ts"]
 }

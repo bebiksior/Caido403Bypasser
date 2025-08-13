@@ -6,8 +6,7 @@
   "license": "CC0-1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --config ./vite.config.dev.ts",
-    "build": "vite build"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@emotion/react": "^11.13.5",

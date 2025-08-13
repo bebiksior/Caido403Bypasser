@@ -4,11 +4,10 @@
     "lib": ["DOM", "ESNext"],
     "types": ["@caido/sdk-backend"],
     "baseUrl": ".",
-    "noResolve": false,
-    "moduleResolution": "node",
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "jsx": "react-jsx"
   },
   "include": ["./src/**/*.tsx", "./src/**/*.ts"]
 }

@@ -1,4 +1,3 @@
-import React from "react";
 import { EmptyPage } from "@/components/emptypage/EmptyPage";
 import { HTTPEditor } from "@/components/httpeditor/HTTPEditor";
 import { useScansLocalStore } from "@/stores/scansStore";
@@ -19,19 +18,19 @@ const TemplateResultPreview = () => {
     selectedTemplateResultID
   );
 
-  if (!selectedScanID) return EmptyPage("No scan selected");
+  if (!selectedScanID) {return EmptyPage("No scan selected");}
   if (!selectedTemplateResultID)
-    return EmptyPage("No template result selected");
+    {return EmptyPage("No template result selected");}
 
   return (
     <StyledSplitter>
       <StyledBox>
-        <HTTPEditor type="request" value={templateResult?.SentRawRequest || ""} />
+        <HTTPEditor type="request" value={templateResult?.SentRawRequest ?? ""} />
       </StyledBox>
       <StyledBox>
         <HTTPEditor
           type="response"
-          value={templateResult?.Response.RawResponse || ""}
+          value={templateResult?.Response.RawResponse ?? ""}
         />
       </StyledBox>
     </StyledSplitter>

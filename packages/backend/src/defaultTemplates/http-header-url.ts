@@ -1,0 +1,32 @@
+import { type Template } from "shared";
+
+export const httpHeaderUrlTemplate: Template = {
+  id: "http-header-url",
+  description:
+    "Sends the request using a different HTTP path (using full URL notation) using HTTP headers.",
+  enabled: true,
+  modificationScript: `
+const headerKeys=["Base-URL","Http-URL","Original-Path","Original-URL","Path","Proxy-Request-FullURI","Proxy-URL","Referer","Request-URI","URI","URL","X-Accel-Redirect","X-Cf-URL","X-Envoy-Original-Path","X-Flx-Redirect-URL","X-Forwarded-Path","X-Forwarded-URI","X-Forwarded-URL","X-HTTP-DestinationURL","X-HTTP-Path-Override","X-MS-Endpoint-Absolute-Path","X-Ning-Request-URI","X-Original-Path","X-Original-URI","X-Original-URL","X-Override-URL","X-Path","X-Proxy-Request","X-Proxy-URL","X-Referer","X-Referrer","X-Rewrite-URI","X-Rewrite-URL","X-Route-Request","X-Sendfile","X-URI","X-URL","X-Wap-Profile","X-Waws-Unencoded-URL"];
+
+const originalPath = helper.getPath(input);
+const parts = originalPath.split("/").filter(Boolean);
+const modifiedRequests = [];
+const host = "localhost"; // fallback host as helper API doesn't expose it
+
+// Loop to create prefixes and suffixes from the path parts
+for (let i = 0; i <= parts.length; i++) {
+  const prefix = i === 0 ? "/" : "/" + parts.slice(0, i).join("/");
+  const suffix = "/" + parts.slice(i).join("/");
+  const newPath = suffix === "/" ? "/" : suffix;
+  const fullUrl = \`http://\${host}\${prefix}\`;
+
+  // For each header, create a modified request with updated path and header
+  for (const header of headerKeys) {
+    let req = helper.setPath(input, () => newPath);
+    req = helper.addHeader(req, \`\${header}: \${fullUrl}\`);
+    modifiedRequests.push(req);
+  }
+}
+
+return modifiedRequests;`.trim(),
+};

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { HTTPEditor } from "@/components/httpeditor/HTTPEditor";
 import { StyledBox } from "caido-material-ui";
 import { StyledSplitter } from "caido-material-ui";
@@ -29,7 +29,7 @@ const TestsPanel = () => {
         <div className="flex flex-col justify-between h-full">
           <HTTPEditor
             type="request"
-            value={testResults[currentTestResultIndex] || ""}
+            value={testResults[currentTestResultIndex] ?? ""}
             removeFooter={true}
           />
           <div className="flex justify-between items-center">

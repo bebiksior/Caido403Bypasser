@@ -4,3 +4,4 @@ dist
 .vscode
 pnpm-lock.yaml
 .zed
+.cursor

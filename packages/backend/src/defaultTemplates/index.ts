@@ -1,57 +1,49 @@
-import add8KBBody from "@/defaultTemplates/add-8kb-body.yaml";
-import httpFirstLineCases from "@/defaultTemplates/http-first-line-cases.yaml";
-import httpHeaderPath from "@/defaultTemplates/http-header-path.yaml";
-import httpHeaderUrl from "@/defaultTemplates/http-header-url.yaml";
-import httpHeadersIp from "@/defaultTemplates/http-headers-ip.yaml";
-import httpHeadersMethods from "@/defaultTemplates/http-headers-methods.yaml";
-import httpHeadersPort from "@/defaultTemplates/http-headers-port.yaml";
-import httpHeadersScheme from "@/defaultTemplates/http-headers-scheme.yaml";
-import httpMethods from "@/defaultTemplates/http-methods.yaml";
-import httpVersion from "@/defaultTemplates/http-version.yaml";
-import miscEndPath from "@/defaultTemplates/misc-end-path.yaml";
-import miscMiddlePath from "@/defaultTemplates/misc-middle-path.yaml";
-import pathAsUrl from "@/defaultTemplates/path-as-url.yaml";
-import pathExtension from "@/defaultTemplates/path-extension.yaml";
-import pathSingleCharDoubleUrlEncode from "@/defaultTemplates/path-single-char-double-url-encode.yaml";
-import pathSingleCharUppercase from "@/defaultTemplates/path-single-char-uppercase.yaml";
-import pathSingleCharUrlEncode from "@/defaultTemplates/path-single-char-url-encode.yaml";
-import singleCharTripleUrlEncode from "@/defaultTemplates/single-char-triple-url-encode.yaml";
-import trimInconsistencies from "@/defaultTemplates/trim-inconsistencies.yaml";
-import unicodeBypassAddEfbc8f from "@/defaultTemplates/unicode-bypass-add-efbc8f.yaml";
-import userAgent from "@/defaultTemplates/user-agent.yaml";
-import { Template } from "shared";
+import { type Template } from "shared";
 
-const convertToTemplate = (input: Record<string, any>): Template => {
-  return {
-    id: input.id,
-    description: input.description,
-    enabled: input.enabled,
-    modificationScript: input.modificationScript,
-  };
-};
+import { add8kbBodyTemplate } from "./add-8kb-body";
+import { httpFirstLineCasesTemplate } from "./http-first-line-cases";
+import { httpHeaderPathTemplate } from "./http-header-path";
+import { httpHeaderUrlTemplate } from "./http-header-url";
+import { httpHeadersIpTemplate } from "./http-headers-ip";
+import { httpHeadersMethodsTemplate } from "./http-headers-methods";
+import { httpHeadersPortTemplate } from "./http-headers-port";
+import { httpHeadersSchemeTemplate } from "./http-headers-scheme";
+import { httpMethodsTemplate } from "./http-methods";
+import { httpVersionTemplate } from "./http-version";
+import { miscEndPathTemplate } from "./misc-end-path";
+import { miscMiddlePathTemplate } from "./misc-middle-path";
+import { pathAsUrlTemplate } from "./path-as-url";
+import { pathExtensionTemplate } from "./path-extension";
+import { pathSingleCharDoubleUrlEncodeTemplate } from "./path-single-char-double-url-encode";
+import { pathSingleCharUppercaseTemplate } from "./path-single-char-uppercase";
+import { pathSingleCharUrlEncodeTemplate } from "./path-single-char-url-encode";
+import { singleCharTripleUrlEncodeTemplate } from "./single-char-triple-url-encode";
+import { trimInconsistenciesTemplate } from "./trim-inconsistencies";
+import { unicodeBypassAddEfbc8fTemplate } from "./unicode-bypass-add-efbc8f";
+import { userAgentTemplate } from "./user-agent";
 
-const defaultTemplates = [
-  add8KBBody,
-  httpFirstLineCases,
-  httpHeaderPath,
-  httpHeaderUrl,
-  httpHeadersIp,
-  httpHeadersMethods,
-  httpHeadersPort,
-  httpHeadersScheme,
-  httpMethods,
-  httpVersion,
-  miscEndPath,
-  miscMiddlePath,
-  pathAsUrl,
-  pathExtension,
-  pathSingleCharDoubleUrlEncode,
-  pathSingleCharUppercase,
-  pathSingleCharUrlEncode,
-  singleCharTripleUrlEncode,
-  trimInconsistencies,
-  unicodeBypassAddEfbc8f,
-  userAgent,
-].map(convertToTemplate);
+const defaultTemplates: Template[] = [
+  add8kbBodyTemplate,
+  httpFirstLineCasesTemplate,
+  httpHeaderPathTemplate,
+  httpHeaderUrlTemplate,
+  httpHeadersIpTemplate,
+  httpHeadersMethodsTemplate,
+  httpHeadersPortTemplate,
+  httpHeadersSchemeTemplate,
+  httpMethodsTemplate,
+  httpVersionTemplate,
+  miscEndPathTemplate,
+  miscMiddlePathTemplate,
+  pathAsUrlTemplate,
+  pathExtensionTemplate,
+  pathSingleCharDoubleUrlEncodeTemplate,
+  pathSingleCharUppercaseTemplate,
+  pathSingleCharUrlEncodeTemplate,
+  singleCharTripleUrlEncodeTemplate,
+  trimInconsistenciesTemplate,
+  unicodeBypassAddEfbc8fTemplate,
+  userAgentTemplate,
+];
 
 export default defaultTemplates;

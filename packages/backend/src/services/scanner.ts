@@ -1,10 +1,11 @@
+import { type SDK } from "caido:plugin";
+import { type RequestResponse, RequestSpecRaw } from "caido:utils";
+import { runScript, type Scan, type TemplateResult } from "shared";
+
+import { ScanStore } from "../stores/scans";
 import { SettingsStore } from "../stores/settings";
 import { TemplateStore } from "../stores/templates";
-import { runScript, Scan, TemplateResult } from "shared";
-import { RequestResponse, RequestSpecRaw } from "caido:utils";
-import { SDK } from "caido:plugin";
-import { ScanStore } from "@/stores/scans";
-import { CaidoBackendSDK } from "@/types";
+import { type CaidoBackendSDK } from "../types";
 
 const BaseTemplateResult: Omit<TemplateResult, "ID"> = {
   TemplateID: "",
@@ -15,7 +16,7 @@ const BaseTemplateResult: Omit<TemplateResult, "ID"> = {
     ContentLength: 0,
     Time: 0,
   },
-  State: "Running",
+  Status: "Running",
 };
 
 function stringToUint8Array(str: string): Uint8Array {
@@ -27,22 +28,22 @@ function stringToUint8Array(str: string): Uint8Array {
 }
 
 const isCancelled = (scan: Scan) =>
-  scan.State === "Cancelled" || scan.State === "Timed Out";
+  scan.Status === "Cancelled" || scan.Status === "Timed Out";
 
 function getNextTemplateResultID(scanStore: ScanStore, scanID: number): number {
   const scan = scanStore.getScan(scanID);
-  if (!scan) return 1;
+  if (!scan) {return 1;}
 
   const highestID = scan.Results.reduce(
     (max, result) => Math.max(max, result.ID),
-    0
+    0,
   );
   return highestID + 1;
 }
 
 export const runScanWorker = async (
   sdk: CaidoBackendSDK,
-  scan: Scan
+  scan: Scan,
 ): Promise<void> => {
   const settingsStore = SettingsStore.get();
   const settings = settingsStore.getSettings();
@@ -53,10 +54,10 @@ export const runScanWorker = async (
   const scanStore = ScanStore.get();
 
   for (const template of templates) {
-    if (isCancelled(scan)) break;
-    if (!template.enabled) continue;
+    if (isCancelled(scan)) {break;}
+    if (!template.enabled) {continue;}
 
-    let baseRequest = scan.Target.RawRequest;
+    const baseRequest = scan.Target.RawRequest;
     const result = runScript(baseRequest, template.modificationScript);
 
     if (!result.success) {
@@ -67,8 +68,8 @@ export const runScanWorker = async (
         ID: getNextTemplateResultID(scanStore, scan.ID),
         TemplateID: template.id,
         SentRawRequest:
-          "Template script failed to execute. Error:\n" + result.error,
-        State: "Failed",
+          "Template script failed to execute. Error:\n" + String(result.error),
+        Status: "Failed",
       };
 
       scanStore.addTemplateResult(scan.ID, templateResult);
@@ -78,14 +79,14 @@ export const runScanWorker = async (
     }
 
     for (const modifiedRequest of result.requests) {
-      if (isCancelled(scan)) break;
+      if (isCancelled(scan)) {break;}
 
       const templateResultID = getNextTemplateResultID(scanStore, scan.ID);
       const templateResult: TemplateResult = {
         ...BaseTemplateResult,
         ID: templateResultID,
         TemplateID: template.id,
-        State: "Running",
+        Status: "Running",
         SentRawRequest: modifiedRequest,
       };
 
@@ -97,10 +98,10 @@ export const runScanWorker = async (
         spec.setRaw(stringToUint8Array(modifiedRequest));
 
         const { response } = await sdk.requests.send(spec);
-        const body = response.getRaw().toText() || "";
+        const body = response.getRaw().toText() ?? "";
 
         const updateFields: Partial<TemplateResult> = {
-          State: "Success",
+          Status: "Success",
           Response: {
             StatusCode: response.getCode(),
             RawResponse: body,
@@ -115,18 +116,18 @@ export const runScanWorker = async (
           "templateResults:updated",
           scan.ID,
           templateResultID,
-          updateFields
+          updateFields,
         );
 
         if (settings.templatesDelay > 0)
-          await new Promise((resolve) =>
-            setTimeout(resolve, settings.templatesDelay)
-          );
+          {await new Promise((resolve) =>
+            setTimeout(resolve, settings.templatesDelay),
+          );}
       } catch (error) {
         sdk.console.log(`Error processing template ${template.id}: ${error}`);
 
         const updateFields: Partial<TemplateResult> = {
-          State: "Failed",
+          Status: "Failed",
           Response: {
             StatusCode: 0,
             RawResponse: `Error processing template: ${error}`,
@@ -140,7 +141,7 @@ export const runScanWorker = async (
           "templateResults:updated",
           scan.ID,
           templateResultID,
-          updateFields
+          updateFields,
         );
       }
     }
@@ -148,7 +149,7 @@ export const runScanWorker = async (
 
   if (isCancelled(scan)) {
     const fieldsUpdate: Partial<Scan> = {
-      State: "Cancelled",
+      Status: "Cancelled",
       finishedAt: new Date(),
     };
     scanStore.updateScan(scan.ID, fieldsUpdate);
@@ -157,7 +158,7 @@ export const runScanWorker = async (
   }
 
   const fieldsUpdate: Partial<Scan> = {
-    State: "Completed",
+    Status: "Completed",
     finishedAt: scan.finishedAt,
   };
 
@@ -168,7 +169,7 @@ export const runScanWorker = async (
 export const sendRequest = async (
   rawRequest: string,
   url: string,
-  sdk: SDK
+  sdk: SDK,
 ): Promise<RequestResponse> => {
   const spec = new RequestSpecRaw(url);
   spec.setRaw(rawRequest);

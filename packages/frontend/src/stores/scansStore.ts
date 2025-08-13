@@ -1,12 +1,21 @@
-import { useSDKStore } from "@/stores/sdkStore";
-import { CaidoSDK } from "@/types/types";
-import { handleBackendCall } from "@/utils/utils";
-import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Scan, ScanTarget } from "shared";
+import {
+  type QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { type ScanTarget } from "shared";
 import { create } from "zustand";
 
-export const initializeEvents = (sdk: CaidoSDK, queryClient: QueryClient) => {
-  sdk.backend.onEvent("scans:created", (scan: Scan) => {
+import { useSDKStore } from "@/stores/sdkStore";
+import { type FrontendSDK } from "@/types/types";
+import { handleBackendCall } from "@/utils/utils";
+
+export const initializeEvents = (
+  sdk: FrontendSDK,
+  queryClient: QueryClient,
+) => {
+  sdk.backend.onEvent("scans:created", () => {
     queryClient.invalidateQueries({ queryKey: ["scans"] });
   });
 
@@ -19,9 +28,12 @@ export const initializeEvents = (sdk: CaidoSDK, queryClient: QueryClient) => {
     }
   });
 
-  sdk.backend.onEvent("scans:updated", (scanID: number, scan: Partial<Scan>) => {
-    queryClient.invalidateQueries({ queryKey: ["scans"] });
-  });
+  sdk.backend.onEvent(
+    "scans:updated",
+    () => {
+      queryClient.invalidateQueries({ queryKey: ["scans"] });
+    },
+  );
 };
 
 // Calls sdk.backend.getScans()
@@ -68,6 +80,22 @@ export const useDeleteScan = () => {
   return { deleteScan: mutate, isPending, error };
 };
 
+// Calls sdk.backend.cancelScan()
+export const useCancelScan = () => {
+  const sdk = useSDKStore.getState().getSDK();
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending, error } = useMutation({
+    mutationFn: (scanID: number) =>
+      handleBackendCall(sdk.backend.cancelScan(scanID), sdk),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["scans"] });
+    },
+  });
+
+  return { cancelScan: mutate, isPending, error };
+};
+
 // Calls sdk.backend.getScan()
 export const useScan = (scanID: number) => {
   const sdk = useSDKStore.getState().getSDK();
@@ -94,7 +122,6 @@ export const useClearScans = () => {
       scansLocalStore.deselectScan();
     },
   });
-  
 
   return { clearScans: mutate, isPending, error };
 };
@@ -106,13 +133,13 @@ export const useScansStore = () => {
   return { scans, selectedScanID, setSelectedScanID };
 };
 
-interface ScansStore {
+type ScansStore = {
   selectedScanID: number | undefined;
   setSelectedScanID: (selectedScanID: number) => void;
   deselectScan: () => void;
 }
 
-export const useScansLocalStore = create<ScansStore>((set, get) => ({
+export const useScansLocalStore = create<ScansStore>((set) => ({
   selectedScanID: undefined,
   setSelectedScanID: (selectedScanID: number) => set({ selectedScanID }),
   deselectScan: () => set({ selectedScanID: undefined }),

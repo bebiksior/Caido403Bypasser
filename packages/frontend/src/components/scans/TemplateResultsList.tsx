@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -39,7 +39,7 @@ const TemplateResultsList = () => {
   const selectedScanID = useScansLocalStore((state) => state.selectedScanID);
 
   const { templateResults, isLoading, isError, error } = useTemplateResults(
-    selectedScanID || 0,
+    selectedScanID ?? 0,
   );
 
   useEffect(() => {
@@ -47,8 +47,8 @@ const TemplateResultsList = () => {
   }, [selectedScanID, deselectTemplateResult]);
 
   const getColorForStatusCode = (statusCode: number) => {
-    if (statusCode >= 200 && statusCode < 300) return "success";
-    if (statusCode >= 300 && statusCode < 400) return "warning";
+    if (statusCode >= 200 && statusCode < 300) {return "success";}
+    if (statusCode >= 300 && statusCode < 400) {return "warning";}
     return "error";
   };
 
@@ -69,7 +69,7 @@ const TemplateResultsList = () => {
   };
 
   const sortedTemplateResults = useMemo(() => {
-    if (!templateResults || !sortField || !sortOrder) return templateResults;
+    if (!templateResults || !sortField || !sortOrder) {return templateResults;}
     return [...templateResults].sort((a, b) => {
       let comparison = 0;
       switch (sortField) {
@@ -78,31 +78,31 @@ const TemplateResultsList = () => {
           break;
         case "StatusCode":
           comparison =
-            (a.Response.StatusCode || 0) - (b.Response.StatusCode || 0);
+            (a.Response.StatusCode ?? 0) - (b.Response.StatusCode ?? 0);
           break;
         case "ContentLength":
           comparison =
-            (a.Response.ContentLength || 0) - (b.Response.ContentLength || 0);
+            (a.Response.ContentLength ?? 0) - (b.Response.ContentLength ?? 0);
           break;
         case "Time":
-          comparison = (a.Response.Time || 0) - (b.Response.Time || 0);
+          comparison = (a.Response.Time ?? 0) - (b.Response.Time ?? 0);
           break;
         case "TemplateID":
           comparison = a.TemplateID.localeCompare(b.TemplateID);
           break;
         case "State":
-          comparison = a.State.localeCompare(b.State);
+          comparison = a.Status.localeCompare(b.Status);
           break;
       }
       return sortOrder === "asc" ? comparison : -comparison;
     });
   }, [templateResults, sortField, sortOrder]);
 
-  if (!selectedScanID) return EmptyPage("No scan selected");
-  if (isLoading) return EmptyPage("Loading template results...");
-  if (isError) return EmptyPage(`Error loading template results: ${error}`);
+  if (!selectedScanID) {return EmptyPage("No scan selected");}
+  if (isLoading) {return EmptyPage("Loading template results...");}
+  if (isError) {return EmptyPage(`Error loading template results: ${error}`);}
   if (!templateResults || templateResults.length === 0)
-    return EmptyPage("No template results found");
+    {return EmptyPage("No template results found");}
 
   return (
     <TableContainer component={Paper} sx={{ height: "100%", overflow: "auto" }}>
@@ -113,7 +113,7 @@ const TemplateResultsList = () => {
               <TableSortLabel
                 active={sortField === "ID"}
                 direction={
-                  sortField === "ID" ? sortOrder || undefined : undefined
+                  sortField === "ID" ? sortOrder ?? undefined : undefined
                 }
                 onClick={() => handleSort("ID")}
               >
@@ -125,7 +125,7 @@ const TemplateResultsList = () => {
                 active={sortField === "StatusCode"}
                 direction={
                   sortField === "StatusCode"
-                    ? sortOrder || undefined
+                    ? sortOrder ?? undefined
                     : undefined
                 }
                 onClick={() => handleSort("StatusCode")}
@@ -138,7 +138,7 @@ const TemplateResultsList = () => {
                 active={sortField === "ContentLength"}
                 direction={
                   sortField === "ContentLength"
-                    ? sortOrder || undefined
+                    ? sortOrder ?? undefined
                     : undefined
                 }
                 onClick={() => handleSort("ContentLength")}
@@ -151,7 +151,7 @@ const TemplateResultsList = () => {
                 active={sortField === "TemplateID"}
                 direction={
                   sortField === "TemplateID"
-                    ? sortOrder || undefined
+                    ? sortOrder ?? undefined
                     : undefined
                 }
                 onClick={() => handleSort("TemplateID")}
@@ -163,7 +163,7 @@ const TemplateResultsList = () => {
               <TableSortLabel
                 active={sortField === "Time"}
                 direction={
-                  sortField === "Time" ? sortOrder || undefined : undefined
+                  sortField === "Time" ? sortOrder ?? undefined : undefined
                 }
                 onClick={() => handleSort("Time")}
               >
@@ -174,7 +174,7 @@ const TemplateResultsList = () => {
               <TableSortLabel
                 active={sortField === "State"}
                 direction={
-                  sortField === "State" ? sortOrder || undefined : undefined
+                  sortField === "State" ? sortOrder ?? undefined : undefined
                 }
                 onClick={() => handleSort("State")}
               >
@@ -193,23 +193,21 @@ const TemplateResultsList = () => {
             >
               <TableCell>{result.ID}</TableCell>
               <TableCell>
-                {result.Response.StatusCode ? (
+                {result.Response.StatusCode && (
                   <Chip
-                    label={result.Response.StatusCode || ""}
+                    label={result.Response.StatusCode ?? ""}
                     color={getColorForStatusCode(result.Response.StatusCode)}
                     size="small"
                   />
-                ) : (
-                  ""
                 )}
               </TableCell>
-              <TableCell>{result.Response.ContentLength || ""}</TableCell>
+              <TableCell>{result.Response.ContentLength ?? ""}</TableCell>
               <TableCell>{result.TemplateID}</TableCell>
-              <TableCell>{result.Response.Time + "ms" || ""}</TableCell>
+              <TableCell>{result.Response.Time + "ms"}</TableCell>
               <TableCell>
                 <Chip
-                  label={result.State}
-                  color={result.State === "Success" ? "success" : "warning"}
+                  label={result.Status}
+                  color={result.Status === "Success" ? "success" : "warning"}
                   size="small"
                 />
               </TableCell>

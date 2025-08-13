@@ -11,17 +11,12 @@
     "build": "vite build"
   },
   "dependencies": {
-    "js-yaml": "^4.1.0",
-    "openai": "^4.73.1",
-    "parse-raw-http": "^0.0.1",
-    "read-yaml-file": "^2.1.0",
-    "real-cancellable-promise": "^1.1.1",
+    "openai": "^5.12.2",
     "shared": "workspace:*",
-    "yaml": "^2.6.1"
+    "yaml": "2.6.1"
   },
   "devDependencies": {
-    "@caido/sdk-backend": "0.45.0",
-    "@caido/sdk-frontend": "0.45.0",
-    "@modyfi/vite-plugin-yaml": "^1.1.0"
+    "@caido/sdk-backend": "0.50.2",
+    "@caido/sdk-frontend": "0.50.2"
   }
 }

@@ -1,10 +1,10 @@
-import { useSDKStore } from "@/stores/sdkStore";
-import { CaidoSDK } from "@/types/types";
-import { Result } from "shared";
+import { type Result } from "shared";
+
+import { FrontendSDK } from "@/types/types";
 
 export async function handleBackendCall<T>(
-  promise: Promise<Result<T>>,
-  sdk: ReturnType<typeof useSDKStore.getState>["sdk"]
+  promise: Promise<Result<T>> | Result<T>,
+  sdk: FrontendSDK,
 ) {
   const result = await promise;
 
@@ -22,7 +22,7 @@ export async function fetchOpenAIStream(
   apiKey: string,
   userPrompt: string,
   systemPrompt: string,
-  handleContent: (content: string) => void
+  handleContent: (content: string) => void,
 ): Promise<void> {
   const apiEndpoint = "https://api.openai.com/v1/chat/completions";
 
@@ -32,7 +32,7 @@ export async function fetchOpenAIStream(
   };
 
   const data = {
-    model: "gpt-4o-mini",
+    model: "gpt-4.1",
     messages: [
       {
         role: "system",
@@ -48,7 +48,7 @@ export async function fetchOpenAIStream(
 
   async function processStream(
     reader: ReadableStreamDefaultReader<Uint8Array>,
-    controller: ReadableStreamDefaultController<Uint8Array>
+    controller: ReadableStreamDefaultController<Uint8Array>,
   ): Promise<void> {
     const { done, value } = await reader.read();
 
@@ -64,13 +64,13 @@ export async function fetchOpenAIStream(
 
     lines.forEach((line) => {
       const trimmedLine = line.trim();
-      if (!trimmedLine || trimmedLine === "[DONE]") return;
-      if (!trimmedLine.startsWith("{")) return;
+      if (!trimmedLine || trimmedLine === "[DONE]") {return;}
+      if (!trimmedLine.startsWith("{")) {return;}
 
       try {
         const jsonObject = JSON.parse(trimmedLine);
         const content = jsonObject.choices[0]?.delta?.content;
-        if (content) {
+        if (content !== undefined) {
           handleContent(content);
         }
       } catch (error) {
@@ -111,7 +111,7 @@ export function formatDate(date: Date): string {
   return `${hours}:${minutes}:${seconds}`;
 }
 
-export function getSelectedRequest(sdk: CaidoSDK) {
+export function getSelectedRequest() {
   function getPortAndTLS(url: string) {
     const isSecure = url.startsWith("https://");
     let portNumber = isSecure ? 443 : 80;
@@ -121,7 +121,9 @@ export function getSelectedRequest(sdk: CaidoSDK) {
       if (urlObj.port) {
         portNumber = parseInt(urlObj.port);
       }
-    } catch {}
+    } catch {
+      // Ignore
+    }
 
     return {
       isTLS: isSecure,
@@ -138,19 +140,19 @@ export function getSelectedRequest(sdk: CaidoSDK) {
     case "#/automate":
     case "#/http-history": {
       const { innerText: historyRaw } = document.querySelector(
-        "[data-language='http-request']"
+        "[data-language='http-request']",
       ) as HTMLElement;
       let historyUrl: string;
       const historyUrlElement = document.querySelector(
-        ".c-request-header__label"
+        ".c-request-header__label",
       );
       const automateUrlElement = document.querySelector(
-        ".c-automate-session-toolbar__connection-info input"
+        ".c-automate-session-toolbar__connection-info input",
       ) as HTMLInputElement;
 
-      if (historyUrlElement) {
+      if (historyUrlElement !== null) {
         historyUrl = (historyUrlElement as HTMLElement).innerText;
-      } else if (automateUrlElement) {
+      } else if (automateUrlElement !== null) {
         historyUrl = automateUrlElement.value;
       } else {
         throw new Error("Could not find URL element");
@@ -170,11 +172,11 @@ export function getSelectedRequest(sdk: CaidoSDK) {
 
     case "#/replay": {
       const { value: replayUrl } = document.querySelector(
-        ".c-replay-session-toolbar__connection-info input"
+        ".c-replay-session-toolbar__connection-info input",
       ) as HTMLInputElement;
 
       const { innerText: replayRaw } = document.querySelector(
-        "[data-language='http-request']"
+        "[data-language='http-request']",
       ) as HTMLElement;
 
       const newReplayRaw = replayRaw.replace(/\n/g, "\r\n");

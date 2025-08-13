@@ -1,6 +1,7 @@
+export type ScanStatus = "Running" | "Completed" | "Failed" | "Timed Out" | "Cancelled";
 export type Scan = {
   ID: number;
-  State: "Running" | "Completed" | "Failed" | "Timed Out" | "Cancelled";
+  Status: ScanStatus;
   Target: ScanTarget;
   startedAt?: Date;
   finishedAt?: Date;
@@ -15,12 +16,13 @@ export type ScanTarget = {
   RawRequest: string;
 };
 
+export type TemplateResultStatus = "Running" | "Success" | "Failed";
 export type TemplateResult = {
   ID: number;
   TemplateID: string;
   SentRawRequest: string;
   Response: Response;
-  State: "Running" | "Success" | "Failed";
+  Status: TemplateResultStatus;
 };
 
 export type Response = {

@@ -1,4 +1,4 @@
-import { Settings } from "shared";
+import { type Settings } from "shared";
 
 export class SettingsStore {
   private static instance: SettingsStore;
@@ -8,13 +8,13 @@ export class SettingsStore {
   private constructor() {
     this.settings = {
       templatesDelay: 100,
-      scanTimeout: 30000,
-      openAIKey: ""
+      scanTimeout: 5 * 60 * 1000,
+      openAIKey: "",
     };
   }
 
   static get(): SettingsStore {
-    if (!SettingsStore.instance) {
+    if (SettingsStore.instance === undefined) {
       SettingsStore.instance = new SettingsStore();
     }
 
@@ -30,7 +30,7 @@ export class SettingsStore {
     return this.settings;
   }
 
-  updateSetting(key: string, value: any): Settings {
+  updateSetting(key: string, value: unknown): Settings {
     Object.assign(this.settings, { [key]: value });
     return this.settings;
   }

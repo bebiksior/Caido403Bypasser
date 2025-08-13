@@ -1,4 +1,4 @@
-import { Template } from "shared";
+import { type Template } from "shared";
 
 export class TemplateStore {
   private static instance: TemplateStore;
@@ -10,7 +10,7 @@ export class TemplateStore {
   }
 
   static get(): TemplateStore {
-    if (!TemplateStore.instance) {
+    if (TemplateStore.instance === undefined) {
       TemplateStore.instance = new TemplateStore();
     }
 

@@ -1,16 +1,21 @@
-import { SDK } from "caido:plugin";
-import { type Template } from "shared";
+import { readdir, readFile, rm, writeFile } from "fs/promises";
 import * as path from "path";
-import { readFile, readdir, writeFile, rm } from "fs/promises";
-import readYamlFile from "read-yaml-file";
-import YAML from "yaml";
-import type { Result } from "shared";
-import { TemplateStore } from "../stores/templates";
-import { getTemplateDir, getTemplatePath, validateTemplate } from "../utils/utils";
-import { CaidoBackendSDK } from "@/types";
-import defaultTemplates from "../defaultTemplates";
 
-export async function getTemplates(sdk: SDK): Promise<Result<Template[]>> {
+import { type SDK } from "caido:plugin";
+import { type Result, type Template } from "shared";
+import YAML from "yaml";
+import * as fs from "fs/promises";
+
+import defaultTemplates from "../defaultTemplates";
+import { TemplateStore } from "../stores/templates";
+import { type CaidoBackendSDK } from "../types";
+import {
+  getTemplateDir,
+  getTemplatePath,
+  validateTemplate,
+} from "../utils/utils";
+
+export function getTemplates(): Result<Template[]> {
   const templateStore = TemplateStore.get();
   const templates = templateStore.getTemplates();
 
@@ -32,12 +37,12 @@ export async function resetTemplates(sdk: SDK): Promise<Result<void>> {
   return { kind: "Success", value: undefined };
 }
 
-export async function clearTemplates(sdk: SDK): Promise<Result<void>> {
+export function clearTemplates(): Result<void> {
   const templateStore = TemplateStore.get();
   templateStore.clearTemplates();
   return { kind: "Success", value: undefined };
 }
-export async function getTemplate(sdk: SDK, templateID: string): Promise<Result<Template>> {
+export function getTemplate(_: SDK, templateID: string): Result<Template> {
   const templateStore = TemplateStore.get();
   const template = templateStore.getTemplate(templateID);
   if (!template) {
@@ -112,14 +117,20 @@ export async function loadTemplates(sdk: CaidoBackendSDK) {
 
   const templateDir = getTemplateDir(sdk);
   const files = await readdir(templateDir);
-  if (!files) return;
+  if (files === undefined) {
+    return;
+  }
 
   const loadTemplatePromises = files
     .filter((file) => path.extname(file).toLowerCase() === ".yaml")
     .map(async (file) => {
       const templatePath = path.join(sdk.meta.path(), "templates", file);
       try {
-        const data = (await readYamlFile(templatePath)) as Template;
+        const yamlStr = (await fs.readFile(
+          templatePath,
+          "utf-8"
+        )) as string;
+        const data = YAML.parse(yamlStr) as Template;
         const { valid, message } = validateTemplate(data);
 
         if (valid) {
@@ -158,7 +169,11 @@ export async function writeTemplate(sdk: SDK, template: Template) {
   await writeFile(templatePath, yamlData);
 }
 
-export function createTemplate(sdk: CaidoBackendSDK, template: Template, currentTemplateID?: string): Template {
+export function createTemplate(
+  sdk: CaidoBackendSDK,
+  template: Template,
+  currentTemplateID?: string
+): Template {
   const templateStore = TemplateStore.get();
   if (templateStore.existsTemplate(template.id)) {
     throw new Error(`Template with ID ${template.id} already exists`);

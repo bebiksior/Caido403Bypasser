@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchOpenAIStream, handleBackendCall } from "@/utils/utils";
 import { useSDKStore } from "@/stores/sdkStore";
 import { aiSystemPrompt } from "@/constants";
@@ -40,13 +40,13 @@ const EditorPanel = () => {
     [templates, selectedTemplateID],
   );
 
-  if (!selectedTemplate) return;
+  if (!selectedTemplate) {return;}
 
   useEffect(() => {
     if (selectedTemplate) {
       setDraftId(selectedTemplate.id);
-      setDraftDescription(selectedTemplate.description || "");
-      setDraftScript(selectedTemplate.modificationScript || "");
+      setDraftDescription(selectedTemplate.description ?? "");
+      setDraftScript(selectedTemplate.modificationScript ?? "");
     }
   }, [selectedTemplate]);
 
@@ -64,7 +64,7 @@ const EditorPanel = () => {
   }, [testContent, draftScript, setTestResults, sdk]);
 
   const onSaveClick = useCallback(async () => {
-    if (!selectedTemplate) return;
+    if (!selectedTemplate) {return;}
 
     if (!draftId || !draftDescription || !draftScript) {
       sdk.window.showToast("Please fill all fields", { variant: "error" });
@@ -92,27 +92,27 @@ const EditorPanel = () => {
 
     let aiResponse = "";
     fetchOpenAIStream(
-      settings?.openAIKey || "",
+      settings?.openAIKey ?? "",
       aiPrompt,
       aiSystemPrompt,
       (content: string) => {
         aiResponse += content;
 
         const idMatch = /---ID\s*?\n([\w-]+)/.exec(aiResponse);
-        if (idMatch) setDraftId(idMatch[1] || "");
+        if (idMatch) {setDraftId(idMatch[1] ?? "");}
 
         const descriptionMatch = /---DESCRIPTION\s*?\n(.+)/.exec(aiResponse);
-        if (descriptionMatch) setDraftDescription(descriptionMatch[1] || "");
+        if (descriptionMatch) {setDraftDescription(descriptionMatch[1] ?? "");}
 
         const scriptMatch = /---SCRIPT\s*?\n([\s\S]+)/.exec(aiResponse);
-        if (scriptMatch) setDraftScript(scriptMatch[1] || "");
+        if (scriptMatch) {setDraftScript(scriptMatch[1] ?? "");}
       },
     );
   }, [aiPrompt, settings]);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error: {error?.message}</div>;
-  if (!settings) return <div>No settings</div>;
+  if (isLoading) {return <div>Loading...</div>;}
+  if (isError) {return <div>Error: {error?.message}</div>;}
+  if (!settings) {return <div>No settings</div>;}
 
   const isAIKeyValid = settings.openAIKey && settings.openAIKey !== "";
   const hasUnsavedChanges =

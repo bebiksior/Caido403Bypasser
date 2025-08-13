@@ -19,17 +19,17 @@ export default function SettingsPage() {
     }
   }, [data]);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error: {error?.message}</div>;
-  if (!data || !draftSettings) return <div>No data</div>;
+  if (isLoading) {return <div>Loading...</div>;}
+  if (isError) {return <div>Error: {error?.message}</div>;}
+  if (!data || !draftSettings) {return <div>No data</div>;}
 
   const handleSave = () => {
-    if (!draftSettings) return;
+    if (!draftSettings) {return;}
     updateSettings({ newSettings: draftSettings });
     sdk.window.showToast("Settings saved", { variant: "success" });
   };
 
-  const updateDraftSettings = (key: keyof Settings, value: any) => {
+  const updateDraftSettings = (key: keyof Settings, value: unknown) => {
     setDraftSettings((prev) => ({ ...prev, [key]: value }) as Settings);
   };
 

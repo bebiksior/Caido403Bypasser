@@ -10,5 +10,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {}
+  "dependencies": {
+    "ts-http-forge": "^0.1.1"
+  }
 }

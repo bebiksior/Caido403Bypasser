@@ -1,0 +1,18 @@
+import { type Template } from "shared";
+
+export const pathSingleCharUppercaseTemplate: Template = {
+  id: "path-single-char-uppercase",
+  description:
+    "Replaces character (1 at time) of the path with its uppercase equivalent.",
+  enabled: true,
+  modificationScript: `
+const path = helper.getPath(input);
+const modifiedRequests = [];
+
+for (let i = 1; i < path.length; i++) {
+  const newPath = path.slice(0, i) + path.charAt(i).toUpperCase() + path.slice(i + 1);
+  modifiedRequests.push(helper.setPath(input, () => newPath));
+}
+
+return modifiedRequests;`.trim(),
+};

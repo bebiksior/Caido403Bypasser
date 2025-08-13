@@ -1,0 +1,22 @@
+import { type Template } from "shared";
+
+export const httpHeadersIpTemplate: Template = {
+  id: "http-headers-ip",
+  description: "Sends the request using a different IP using HTTP headers.",
+  enabled: true,
+  modificationScript: `
+const keys = ["Ali-CDN-Real-IP","CF-Connecting-IP","Cdn-Real-IP","Cdn-Src-IP","Cf-Pseudo-IPv4","Client-IP","Cluster-Client-IP","Cluster-IP","Connection","Contact","Destination","Disguised-Host","Fastly-Client-IP","Forwarded","Forwarded-For","Forwarded-For-IP","Forwarded-Host","Forwarder","Forwarder-For","Forwarder-Host","Forwarding","Forwarding-For","Forwarding-Host","From","HTTP-Host","Host","Host-IP","IP","Incap-Client-IP","Origin","Origin-Host","Origin-IP","Originating-IP","Override-IP","Profile","Proxy","Proxy-Client-IP","Proxy-Host","Proxy-IP","Real-Client-IP","Real-IP","Redirect","Remote-Addr","Remote-Host","Remote-IP","Request-Uri","Server","Server-IP","Server-Name","Source-IP","True-Client","True-Client-IP","Via","WL-Proxy-Client-IP","Was-Default-Hostname","X-AppEngine-Trusted-IP-Request","X-Appengine-User-IP","X-Arbitrary","X-Azure-ClientIP","X-Azure-SocketIP","X-Backend-Host","X-Backend-Server","X-BlueCoat-Via","X-C-IP","X-Cache-Info","X-Client-Host","X-Client-IP","X-Cluster-Client-IP","X-Cluster-IP","X-Custom-IP-Authorization","X-Dev-Host","X-Fake-IP","X-Fb-Host","X-Fb-User-Remote-Addr","X-Forward","X-Forward-For","X-Forwarded","X-Forwarded-By","X-Forwarded-For","X-Forwarded-For-IP","X-Forwarded-For-Original","X-Forwarded-From","X-Forwarded-Host","X-Forwarded-Server","X-Forwarder","X-Forwarder-For","X-Forwarder-Host","X-Forwarding","X-Forwarding-For","X-Forwarding-Host","X-Forwared-Host","X-From","X-From-IP","X-Gateway-Host","X-HTTP-Host-Override","X-Host","X-Host-IP","X-Host-Override","X-Http-Host-Override","X-IP","X-IP-Addr","X-IP-Address","X-IP-Trail","X-MS-ADFS-Proxy-Client-IP","X-MS-Forwarded-Client-IP","X-Nokia-ipaddress","X-Origin","X-Origin-Host","X-Origin-IP","X-Original-For","X-Original-Forwarded-For","X-Original-Host","X-Original-Hostname","X-Original-IP","X-Original-Remote-Addr","X-Originally-Forwarded-For","X-Originating","X-Originating-Host","X-Originating-IP","X-Proxy","X-Proxy-IP","X-ProxyMesh-IP","X-ProxyUser-IP","X-Real-Client-IP","X-Real-IP","X-Remote-Addr","X-Remote-Host","X-Remote-IP","X-Served-By","X-Server","X-Server-IP","X-Server-Name","X-Sp-Edge-Host","X-Sp-Forwarded-IP","X-True-Client","X-True-Client-IP","X-True-IP","X-WAP-Network-Client-IP","X-Wap-Profile","X-YWBCLO-UIP","Z-Forwarded-For"];
+const values = ["*","0.0.0.0","10.0.0.1","127.0.0.1","172.17.0.1","192.168.0.2","192.168.1.1","8.8.8.8","localhost","norealhost","null"];
+
+const modifiedRequests = [];
+
+for (const key of keys) {
+  for (const value of values) {
+    const header = \`\${key}: \${value}\`;
+    const newRequest = helper.addHeader(input, header);
+    modifiedRequests.push(newRequest);
+  }
+}
+
+return modifiedRequests;`.trim(),
+};

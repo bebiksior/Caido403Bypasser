@@ -1,4 +1,4 @@
-import { Scan, TemplateResult } from "shared";
+import { type Scan, type TemplateResult } from "shared";
 
 export class ScanStore {
   private static instance: ScanStore;
@@ -10,7 +10,7 @@ export class ScanStore {
   }
 
   static get(): ScanStore {
-    if (!ScanStore.instance) {
+    if (ScanStore.instance === undefined) {
       ScanStore.instance = new ScanStore();
     }
 
@@ -55,7 +55,7 @@ export class ScanStore {
   updateTemplateResult(
     scanID: number,
     templateResultID: number,
-    fields: Partial<TemplateResult>
+    fields: Partial<TemplateResult>,
   ): void {
     const scan = this.scans.get(scanID);
     if (scan) {

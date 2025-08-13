@@ -1,15 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  HTTPRequestEditor,
-  HTTPResponseEditor,
-} from "@caido/sdk-frontend/src/types/editor";
-import { useSDKStore } from "@/stores/sdkStore";
 
-interface HTTPEditorProps {
+import { useSDKStore } from "../../stores/sdkStore";
+import { HTTPRequestEditor, HTTPResponseEditor } from "@caido/sdk-frontend/src/types/types/editor";
+
+type HTTPEditorProps = {
   value: string;
   type: "request" | "response";
   style?: React.CSSProperties;
-  onChange?: (value: string) => void;
   removeFooter?: boolean;
   removeHeader?: boolean;
 }
@@ -20,7 +17,6 @@ export const HTTPEditor: React.FC<HTTPEditorProps> = ({
   value,
   type,
   style,
-  onChange,
   removeFooter = false,
   removeHeader = false,
 }) => {
@@ -31,7 +27,7 @@ export const HTTPEditor: React.FC<HTTPEditorProps> = ({
 
   const setValue = (value: string) => {
     const view = editorRef.current?.getEditorView();
-    if (!view) return;
+    if (!view) {return;}
     view.dispatch({
       changes: {
         from: 0,
@@ -42,7 +38,7 @@ export const HTTPEditor: React.FC<HTTPEditorProps> = ({
   };
 
   const initializeEditor = () => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) {return;}
     const newEditor =
       type === "request"
         ? sdk.ui.httpRequestEditor()
@@ -54,8 +50,8 @@ export const HTTPEditor: React.FC<HTTPEditorProps> = ({
 
     const card = newEditor.getEditorView()?.dom?.closest(".c-card");
     if (card) {
-      if (removeFooter) card.querySelector(".c-card__footer")?.remove();
-      if (removeHeader) card.querySelector(".c-card__header")?.remove();
+      if (removeFooter) {card.querySelector(".c-card__footer")?.remove();}
+      if (removeHeader) {card.querySelector(".c-card__header")?.remove();}
     }
     return newEditor;
   };
@@ -71,7 +67,7 @@ export const HTTPEditor: React.FC<HTTPEditorProps> = ({
   }, [sdk, type, hash]);
 
   useEffect(() => {
-    if (editorRef.current) setValue(value);
+    if (editorRef.current) {setValue(value);}
   }, [value]);
 
   useEffect(() => {

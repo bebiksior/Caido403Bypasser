@@ -1,29 +1,32 @@
-import React, { useEffect, useState } from "react";
+import "allotment/dist/style.css";
+
+import "@/styles/style.css";
+
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import ErrorIcon from "@mui/icons-material/Error";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import RadarIcon from "@mui/icons-material/Radar";
+import SettingsIcon from "@mui/icons-material/Settings";
+import {
+  Box,
+  Button,
+  createTheme,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Tab,
+  Tabs,
+  TextField,
+  ThemeProvider,
+} from "@mui/material";
+import { useEffect, useState } from "react";
+
 import Scans from "@/pages/Scans";
 import SettingsPage from "@/pages/Settings";
 import TemplatesPage from "@/pages/Templates";
-import "@/styles/style.css";
-import {
-  Tab,
-  Tabs,
-  ThemeProvider,
-  createTheme,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Box,
-  TextField,
-} from "@mui/material";
-import { themeOptions } from "@/theme";
-import SettingsIcon from "@mui/icons-material/Settings";
-import RadarIcon from "@mui/icons-material/Radar";
-import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
-import "allotment/dist/style.css";
 import { useSDKStore } from "@/stores/sdkStore";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import ErrorIcon from "@mui/icons-material/Error";
+import { themeOptions } from "@/theme";
 
 export default function App() {
   const [activeComponent, setActiveComponent] = useState("Scans");

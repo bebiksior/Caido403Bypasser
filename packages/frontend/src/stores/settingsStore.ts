@@ -1,7 +1,8 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { type Settings } from "shared";
+
 import { useSDKStore } from "@/stores/sdkStore";
 import { handleBackendCall } from "@/utils/utils";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Settings } from "shared";
 
 export const useSettings = () => {
   const sdk = useSDKStore.getState().getSDK();

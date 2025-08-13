@@ -1,17 +1,18 @@
-import { CaidoSDK } from "@/types/types";
+import { type CommandContext } from "@caido/sdk-frontend/src/types";
+
+import { type FrontendSDK } from "@/types/types";
 import { getSelectedRequest, handleBackendCall } from "@/utils/utils";
-import { CommandContext } from "@caido/sdk-frontend/src/types";
 
 let sidebarCount = 0;
-let observer: MutationObserver | null = null;
+let observer: MutationObserver | undefined = undefined;
 
 export const runScan = async (
-  sdk: CaidoSDK,
+  sdk: FrontendSDK,
   context: CommandContext,
-  setCount: (count: number) => void
+  setCount: (count: number) => void,
 ) => {
   let currentPath = window.location.hash;
-  if (!observer) {
+  if (observer === undefined) {
     observer = new MutationObserver(() => {
       const newPath = window.location.hash;
       if (newPath !== currentPath) {
@@ -45,11 +46,11 @@ export const runScan = async (
   });
 
   const runSingleScan = async (
-    scanConfig: ReturnType<typeof createScanConfig>
+    scanConfig: ReturnType<typeof createScanConfig>,
   ) => {
     const newScan = await handleBackendCall(
       sdk.backend.addScan(scanConfig),
-      sdk
+      sdk,
     );
     return handleBackendCall(sdk.backend.runScan(newScan.ID), sdk);
   };
@@ -68,7 +69,7 @@ export const runScan = async (
 
     for (const request of requests) {
       const req = await sdk.graphql.request({ id: request.id });
-      if (!req.request?.raw) {
+      if (req.request?.raw === undefined) {
         throw new Error("req.request.raw is null. Please report this bug");
       }
 
@@ -76,7 +77,7 @@ export const runScan = async (
         createScanConfig({
           ...request,
           raw: req.request.raw,
-        })
+        }),
       );
     }
 
@@ -87,15 +88,15 @@ export const runScan = async (
       duration: 3000,
     });
   } else if (context.type === "BaseContext") {
-    const request = getSelectedRequest(sdk);
-    if (request) {
+    const request = getSelectedRequest();
+    if (request !== undefined) {
       const runningScan = await runSingleScan(
         createScanConfig({
           raw: request.raw,
           host: request.host ?? "",
           port: request.port,
           isTls: request.isTLS,
-        })
+        }),
       );
 
       sidebarCount += 1;

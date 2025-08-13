@@ -1,0 +1,14 @@
+import { type Template } from "shared";
+
+export const httpMethodsTemplate: Template = {
+  id: "http-methods",
+  description: "Sends the request using all possible HTTP methods.",
+  enabled: true,
+  modificationScript: `
+const methods = ["ACL","BIND","BPROPFIND","CHECKIN","CHECKOUT","CONNECT","COPY","DELETE","GET","HEAD","LABEL","LINK","LOCK","MERGE","MKCOL","MOVE","OPTIONS","ORDERPATCH","PATCH","POST","POUET","PRI","PROPFIND","PROPPATCH","PUT","QUERY","REBIND","REPORT","SEARCH","TRACE","TRACK","UNCHECKOUT","UNLOCK","UPDATE","UPDATEREDIRECTREF","VERSION-CONTROL"];
+const modifiedRequests = methods.map(method => {
+  const modifiedRequest = helper.setMethod(input, () => method);
+  return modifiedRequest;
+});
+return modifiedRequests;`.trim(),
+};

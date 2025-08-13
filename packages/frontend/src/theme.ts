@@ -1,4 +1,4 @@
-import { ThemeOptions } from "@mui/material/styles";
+import { type ThemeOptions } from "@mui/material/styles";
 
 export const themeOptions: ThemeOptions = {
   palette: {
@@ -26,11 +26,11 @@ export const themeOptions: ThemeOptions = {
     MuiButton: {
       variants: [
         {
-          props: { variant: 'contained' },
+          props: { variant: "contained" },
           style: {
-            background: 'var(--c-bg-primary)',
-            color: 'rgb(237, 234, 232)',
-            fontSize: '.875rem',
+            background: "var(--c-bg-primary)",
+            color: "rgb(237, 234, 232)",
+            fontSize: ".875rem",
           },
         },
       ],

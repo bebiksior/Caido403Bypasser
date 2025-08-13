@@ -1,4 +1,3 @@
-import React from "react";
 import { StyledBox } from "caido-material-ui";
 import { StyledSplitter } from "caido-material-ui";
 import TestsPanel from "@/components/templates/panels/TestsPanel";

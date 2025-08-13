@@ -18,12 +18,6 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v4
 
-      - name: Check version
-        id: meta
-        run: |
-          VERSION=$(jq -r .version manifest.json)
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -48,6 +42,13 @@ jobs:
             openssl pkeyutl -sign -inkey private_key.pem -out plugin_package.zip.sig -rawin -in plugin_package.zip
             rm private_key.pem
           fi
+
+      - name: Check version
+        id: meta
+        working-directory: dist
+        run: |
+          VERSION=$(unzip -p plugin_package.zip manifest.json | jq -r .version)
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Create release
         uses: ncipollo/release-action@v1

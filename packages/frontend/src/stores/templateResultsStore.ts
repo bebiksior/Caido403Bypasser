@@ -1,12 +1,13 @@
-import { useSDKStore } from "@/stores/sdkStore";
-import { QueryClient, useQuery } from "@tanstack/react-query";
-import { handleBackendCall } from "@/utils/utils";
+import { type QueryClient, useQuery } from "@tanstack/react-query";
+import { type TemplateResult } from "shared";
 import { create } from "zustand";
-import { CaidoSDK } from "@/types/types";
-import { TemplateResult } from "shared";
-import { useScansLocalStore } from "@/stores/scansStore";
 
-interface TemplateResultsLocalStore {
+import { useScansLocalStore } from "@/stores/scansStore";
+import { useSDKStore } from "@/stores/sdkStore";
+import { type FrontendSDK } from "@/types/types";
+import { handleBackendCall } from "@/utils/utils";
+
+type TemplateResultsLocalStore = {
   selectedTemplateResultID: number | undefined;
   setSelectedTemplateResultID: (selectedTemplateResultID: number) => void;
   deselectTemplateResult: () => void;
@@ -18,7 +19,7 @@ export const useTemplateResultsLocalStore = create<TemplateResultsLocalStore>(
     setSelectedTemplateResultID: (selectedTemplateResultID: number) =>
       set({ selectedTemplateResultID }),
     deselectTemplateResult: () => set({ selectedTemplateResultID: undefined }),
-  })
+  }),
 );
 
 export const useTemplateResults = (scanID: number) => {
@@ -35,36 +36,40 @@ export const useTemplateResults = (scanID: number) => {
 
 export const useTemplateResult = (
   scanID: number | undefined,
-  templateResultID: number | undefined
+  templateResultID: number | undefined,
 ) => {
   const sdk = useSDKStore.getState().getSDK();
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["templateResult", scanID, templateResultID],
     queryFn: () => {
-      if (!scanID || !templateResultID) return Promise.resolve(null);
+      if (scanID === undefined || templateResultID === undefined)
+        {return Promise.resolve(null);}
       return handleBackendCall(
         sdk.backend.getTemplateResult(scanID, templateResultID),
-        sdk
+        sdk,
       );
     },
-    enabled: !!scanID && !!templateResultID,
+    enabled: scanID !== undefined && templateResultID !== undefined,
   });
 
   return { templateResult: data, isLoading, isError, error };
 };
 
-export const initializeEvents = (sdk: CaidoSDK, queryClient: QueryClient) => {
+export const initializeEvents = (
+  sdk: FrontendSDK,
+  queryClient: QueryClient,
+) => {
   sdk.backend.onEvent("templateResults:created", (scanID, templateResult) => {
     const { selectedScanID } = useScansLocalStore.getState();
-    if (scanID !== selectedScanID) return;
+    if (scanID !== selectedScanID) {return;}
 
     queryClient.setQueryData<TemplateResult[]>(
       ["templateResults", scanID],
       (oldData) => {
-        if (!oldData) return [templateResult];
+        if (!oldData) {return [templateResult];}
         return [...oldData, templateResult];
-      }
+      },
     );
   });
 
@@ -72,19 +77,19 @@ export const initializeEvents = (sdk: CaidoSDK, queryClient: QueryClient) => {
     "templateResults:updated",
     (scanID, templateResultID, updatedTemplateResult) => {
       const { selectedScanID } = useScansLocalStore.getState();
-      if (scanID !== selectedScanID) return;
+      if (scanID !== selectedScanID) {return;}
 
       queryClient.setQueryData<TemplateResult[]>(
         ["templateResults", scanID],
         (prevData) => {
-          if (!prevData) return prevData;
+          if (!prevData) {return prevData;}
           return prevData.map((result) =>
             result.ID === templateResultID
               ? { ...result, ...updatedTemplateResult }
-              : result
+              : result,
           );
-        }
+        },
       );
-    }
+    },
   );
 };

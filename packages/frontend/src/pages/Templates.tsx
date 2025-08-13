@@ -58,7 +58,7 @@ export default function TemplatesPage() {
     input.accept = ".yaml";
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
+      if (!file) {return;}
 
       const raw = await file.text();
       await importTemplate(raw);

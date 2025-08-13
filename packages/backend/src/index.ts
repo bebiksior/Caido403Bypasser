@@ -1,4 +1,5 @@
-import { SDK, DefineAPI } from "caido:plugin";
+import { type DefineAPI, type SDK } from "caido:plugin";
+
 import {
   addScan,
   cancelScan,
@@ -18,22 +19,22 @@ import {
   updateSettings,
 } from "./api/settings";
 import {
+  clearTemplates,
   exportTemplate,
   getRawTemplate,
-  getTemplates,
   getTemplate,
+  getTemplates,
   importTemplate,
   loadTemplates,
   removeTemplate,
+  resetTemplates,
   saveTemplate,
   writeTemplates,
-  resetTemplates,
-  clearTemplates,
 } from "./api/templates";
-import { ensureDir } from "./utils/utils";
 import defaultTemplates from "./defaultTemplates";
-import { TemplateStore } from "@/stores/templates";
-import { CaidoBackendSDK } from "./types";
+import { TemplateStore } from "./stores/templates";
+import { type CaidoBackendSDK } from "./types";
+import { ensureDir } from "./utils/utils";
 
 export type { BackendEvents } from "./types";
 
@@ -68,50 +69,58 @@ export type API = DefineAPI<{
 }>;
 
 export async function init(sdk: SDK<API>) {
-  const firstTime = await ensureDir(sdk);
+  try {
+    const firstTime = await ensureDir(sdk);
 
-  if (firstTime) {
-    sdk.console.log("First time setup, adding default templates");
+    if (firstTime) {
+      sdk.console.log("First time setup, adding default templates");
 
-    const templateStore = TemplateStore.get();
-    templateStore.addTemplates(defaultTemplates);
-    await writeTemplates(sdk, defaultTemplates);
+      const templateStore = TemplateStore.get();
+      templateStore.addTemplates(defaultTemplates);
+      await writeTemplates(sdk, defaultTemplates);
+    }
+
+    await loadTemplates(sdk);
+    await loadSettingsFromFile(sdk);
+
+    // Templates
+    sdk.api.register("getTemplates", getTemplates);
+    sdk.api.register("getTemplate", getTemplate);
+    sdk.api.register("getRawTemplate", getRawTemplate);
+    sdk.api.register("saveTemplate", saveTemplate);
+    sdk.api.register("removeTemplate", removeTemplate);
+    sdk.api.register("exportTemplate", exportTemplate);
+    sdk.api.register("importTemplate", importTemplate);
+    sdk.api.register("resetTemplates", resetTemplates);
+    sdk.api.register("clearTemplates", clearTemplates);
+
+    // Scans
+    sdk.api.register("getScans", getScans);
+    sdk.api.register("getScan", getScan);
+    sdk.api.register("addScan", addScan);
+    sdk.api.register("deleteScan", deleteScan);
+    sdk.api.register("updateScan", updateScan);
+    sdk.api.register("runScan", runScan);
+    sdk.api.register("reRunScan", reRunScan);
+    sdk.api.register("getTemplateResults", getTemplateResults);
+    sdk.api.register("getTemplateResult", getTemplateResult);
+    sdk.api.register("clearScans", clearScans);
+    sdk.api.register("cancelScan", cancelScan);
+
+    // Settings
+    sdk.api.register("getSettings", getSettings);
+    sdk.api.register("updateSettings", updateSettings);
+
+    setTimeout(() => {
+      checkUpdates(sdk);
+      console.log("init");
+    }, 4000);
+
+  } catch (error) {
+    setTimeout(() => {
+      sdk.console.error(error);
+    }, 5000);
   }
-
-  await loadTemplates(sdk);
-  await loadSettingsFromFile(sdk);
-
-  // Templates
-  sdk.api.register("getTemplates", getTemplates);
-  sdk.api.register("getTemplate", getTemplate);
-  sdk.api.register("getRawTemplate", getRawTemplate);
-  sdk.api.register("saveTemplate", saveTemplate);
-  sdk.api.register("removeTemplate", removeTemplate);
-  sdk.api.register("exportTemplate", exportTemplate);
-  sdk.api.register("importTemplate", importTemplate);
-  sdk.api.register("resetTemplates", resetTemplates);
-  sdk.api.register("clearTemplates", clearTemplates);
-
-  // Scans
-  sdk.api.register("getScans", getScans);
-  sdk.api.register("getScan", getScan);
-  sdk.api.register("addScan", addScan);
-  sdk.api.register("deleteScan", deleteScan);
-  sdk.api.register("updateScan", updateScan);
-  sdk.api.register("runScan", runScan);
-  sdk.api.register("reRunScan", reRunScan);
-  sdk.api.register("getTemplateResults", getTemplateResults);
-  sdk.api.register("getTemplateResult", getTemplateResult);
-  sdk.api.register("clearScans", clearScans);
-  sdk.api.register("cancelScan", cancelScan);
-
-  // Settings
-  sdk.api.register("getSettings", getSettings);
-  sdk.api.register("updateSettings", updateSettings);
-
-  setTimeout(() => {
-    checkUpdates(sdk);
-  }, 2000);
 }
 
 async function checkUpdates(sdk: CaidoBackendSDK) {
