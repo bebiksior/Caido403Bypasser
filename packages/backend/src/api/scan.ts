@@ -188,6 +188,10 @@ export const runScan = (sdk: CaidoBackendSDK, scanID: number): Result<Scan> => {
 
     const timeoutPromise = new Promise((_, reject) => {
       setTimeout(() => {
+        if (scan.Status !== "Running") {
+          return;
+        }
+
         reject(
           createScanError(sdk, scanID, ScanErrorCode.SCAN_TIMEOUT, {
             scanId: scan.ID,
